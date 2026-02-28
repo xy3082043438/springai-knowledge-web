@@ -1,5 +1,13 @@
 <template>
   <div class="knowledge-container">
+    <div class="page-header">
+      <div>
+        <div class="page-title">知识库管理</div>
+        <div class="page-subtitle">上传、维护与索引企业文档，保障检索质量</div>
+      </div>
+      <el-button type="warning" @click="handleReindexAll">全部重索引</el-button>
+    </div>
+
     <div class="toolbar">
       <el-input
         v-model="searchQuery"
@@ -13,7 +21,6 @@
       <el-button type="primary" @click="handleSearch">搜索</el-button>
       <el-button type="primary" icon="Upload" @click="uploadVisible = true">上传文档</el-button>
       <el-button icon="Refresh" @click="loadDocuments">刷新</el-button>
-      <el-button type="warning" @click="handleReindexAll">全部重索引</el-button>
     </div>
 
     <el-table :data="documents" v-loading="loading" style="width: 100%; margin-top: 20px;" border>
@@ -107,6 +114,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { UploadFilled } from '@element-plus/icons-vue'
 import type { UploadFile } from 'element-plus'
 import {
   listDocuments,
@@ -279,11 +287,35 @@ const formatSize = (bytes: number | null) => {
 .knowledge-container {
   padding: 20px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 16px;
+  border: 1px solid #e8edf5;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
 }
 .toolbar {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e8edf5;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
 }
 </style>

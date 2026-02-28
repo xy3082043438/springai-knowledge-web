@@ -1,6 +1,10 @@
 <template>
   <div class="user-container">
-    <div class="toolbar">
+    <div class="page-header">
+      <div>
+        <div class="page-title">用户管理</div>
+        <div class="page-subtitle">管理系统账号与角色权限</div>
+      </div>
       <el-button type="primary" icon="Plus" @click="handleAdd">添加用户</el-button>
     </div>
 
@@ -148,10 +152,25 @@ const saveUser = async () => {
 .user-container {
   padding: 20px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 16px;
+  border: 1px solid #e8edf5;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
 }
-.toolbar {
+.page-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
 }
 </style>

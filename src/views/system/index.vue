@@ -1,6 +1,10 @@
 <template>
   <div class="system-config-container">
-    <div class="toolbar" style="margin-bottom: 20px;">
+    <div class="page-header">
+      <div>
+        <div class="page-title">系统配置</div>
+        <div class="page-subtitle">统一管理系统参数与运行边界</div>
+      </div>
       <el-button type="primary" icon="Refresh" @click="handleRefresh">刷新全局配置</el-button>
     </div>
 
@@ -98,6 +102,26 @@ const handleRefresh = async () => {
 .system-config-container {
   padding: 20px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 16px;
+  border: 1px solid #e8edf5;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
 }
 </style>

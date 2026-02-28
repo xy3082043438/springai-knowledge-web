@@ -1,6 +1,13 @@
 <template>
   <div class="qa-container">
     <div class="chat-panel">
+      <div class="chat-header">
+        <div>
+          <div class="chat-title">智能问答</div>
+          <div class="chat-subtitle">基于企业知识库的检索增强问答</div>
+        </div>
+        <el-tag type="info">企业知识库</el-tag>
+      </div>
       <div class="chat-history" ref="chatHistoryRef">
         <div v-for="(msg, index) in messages" :key="index" :class="['message', msg.role]">
           <div class="message-content">
@@ -60,6 +67,7 @@
           placeholder="基于知识库提问..."
           @keydown.enter.exact.prevent="sendMessage"
         />
+        <div class="input-tip">Enter 发送，Shift + Enter 换行</div>
         <div class="input-actions">
           <el-button type="primary" @click="sendMessage" :loading="loading">发送</el-button>
         </div>
@@ -191,16 +199,37 @@ const formatMessage = (content: string) => {
   display: flex;
   flex-direction: column;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  border: 1px solid #e8edf5;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
   overflow: hidden;
+}
+
+.chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef2f7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #ffffff, #f6f9ff);
+}
+
+.chat-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.chat-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
 }
 
 .chat-history {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background-color: #f5f7fa;
+  background-color: #f6f8fb;
 }
 
 .message { margin-bottom: 20px; }
@@ -213,18 +242,24 @@ const formatMessage = (content: string) => {
 .text {
   background-color: #fff;
   padding: 10px 15px;
-  border-radius: 8px;
+  border-radius: 12px;
   max-width: 80%;
   line-height: 1.5;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
-.message.user .text { background-color: #d9ecff; }
+.message.user .text { background-color: #e9f2ff; }
 
 .chat-input {
   padding: 20px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid #eef2f7;
   background-color: #fff;
+}
+
+.input-tip {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .input-actions { margin-top: 10px; text-align: right; }
