@@ -45,8 +45,8 @@
             </div>
           </template>
           <div class="card-content">
-            <el-tag :type="stats.boundary ? 'success' : 'info'">
-              {{ stats.boundary || '加载中...' }}
+            <el-tag :type="stats.systemHealthy === false ? 'danger' : (stats.systemStatus ? 'success' : 'info')">
+              {{ stats.systemStatus || '加载中...' }}
             </el-tag>
           </div>
         </el-card>
@@ -65,27 +65,29 @@ import { reactive, onMounted } from 'vue'
 import { listDocuments } from '@/api/document'
 import { listUsers } from '@/api/user'
 import { searchQaLogs } from '@/api/log'
-import { getBoundary } from '@/api/config'
+import { getSystemStatus } from '@/api/config'
 
 const stats = reactive({
   docCount: 0,
   qaCount: 0,
   userCount: 0,
-  boundary: '',
+  systemStatus: '',
+  systemHealthy: null as boolean | null,
 })
 
 onMounted(async () => {
   try {
-    const [docRes, userRes, qaRes, boundaryRes] = await Promise.all([
+    const [docRes, userRes, qaRes, statusRes] = await Promise.all([
       listDocuments(),
       listUsers(),
       searchQaLogs({ page: 0, size: 1 }),
-      getBoundary(),
+      getSystemStatus(),
     ])
     stats.docCount = docRes.data.length
     stats.userCount = userRes.data.length
     stats.qaCount = qaRes.data.total
-    stats.boundary = boundaryRes.data.boundary
+    stats.systemStatus = statusRes.data.message || statusRes.data.status
+    stats.systemHealthy = statusRes.data.healthy
   } catch {
     // errors handled by interceptor
   }

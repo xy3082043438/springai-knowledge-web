@@ -68,7 +68,7 @@ export interface DocumentResponse {
     title: string
     content: string
     fileName: string
-    contentType: string
+    contentType?: string
     fileSize: number
     status: DocumentStatus
     allowedRoles: string[]
@@ -80,7 +80,7 @@ export interface DocumentSummaryResponse {
     id: number
     title: string
     fileName: string
-    contentType: string
+    contentType?: string
     fileSize: number
     status: DocumentStatus
     allowedRoles: string[]
@@ -131,9 +131,9 @@ export interface QaRequest {
 
 export interface QaResponse {
     answer: string
-    documents: DocumentResponse[]
-    sources: QaSourceResponse[]
-    qaLogId: number
+    documents?: DocumentResponse[]
+    sources?: QaSourceResponse[]
+    qaLogId?: number
 }
 
 export interface QaSourceResponse {
@@ -162,7 +162,7 @@ export interface QaFeedbackResponse {
     userId: number
     username: string
     helpful: boolean
-    comment: string
+    comment?: string
     createdAt: string
 }
 
@@ -209,10 +209,16 @@ export interface SystemConfigRequest {
 export interface SystemConfigResponse {
     key: string
     value: string
-    description: string
+    description?: string
     updatedAt: string
 }
 
 export interface SystemBoundaryResponse {
     boundary: string
+}
+
+export interface SystemStatusResponse {
+    status: string
+    healthy: boolean
+    message: string
 }

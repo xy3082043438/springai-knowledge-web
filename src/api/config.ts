@@ -3,6 +3,7 @@ import type {
     SystemConfigRequest,
     SystemConfigResponse,
     SystemBoundaryResponse,
+    SystemStatusResponse,
 } from '@/types/api'
 
 export function listConfigs() {
@@ -23,4 +24,8 @@ export function refreshConfig() {
 
 export function getBoundary() {
     return request.get<SystemBoundaryResponse>('/api/system/boundary')
+}
+
+export function getSystemStatus() {
+    return request.get<SystemStatusResponse>('/api/system/status')
 }

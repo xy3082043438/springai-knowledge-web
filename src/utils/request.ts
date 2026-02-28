@@ -19,14 +19,15 @@ request.interceptors.request.use(
     (error) => Promise.reject(error)
 )
 
-// 响应拦截器 — 401 自动跳转登录
+// 响应拦截器 — 401/403 自动跳转登录
 request.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        const status = error.response?.status
+        if (status === 401 || status === 403) {
             localStorage.removeItem('token')
             router.push('/login')
-            ElMessage.error('登录已过期，请重新登录')
+            ElMessage.error(status === 403 ? '未登录或权限不足，请重新登录' : '登录已过期，请重新登录')
         } else {
             const msg = error.response?.data?.message || error.message || '请求失败'
             ElMessage.error(msg)
