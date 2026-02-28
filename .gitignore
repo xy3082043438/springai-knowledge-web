@@ -34,3 +34,6 @@ coverage
 
 # Vitest
 __screenshots__/
+
+# Stakpak session files
+.stakpak/session*
