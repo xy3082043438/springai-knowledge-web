@@ -48,6 +48,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'SystemConfig',
         component: () => import('../views/system/index.vue'),
         meta: { title: '系统配置', icon: 'Setting' }
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('../views/profile/index.vue'),
+        meta: { title: '个人信息' }
       }
     ]
   }

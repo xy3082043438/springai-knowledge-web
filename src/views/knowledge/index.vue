@@ -5,25 +5,24 @@
         <div class="page-title">知识库管理</div>
         <div class="page-subtitle">上传、维护与索引企业文档，保障检索质量</div>
       </div>
-      <el-button type="warning" @click="handleReindexAll">全部重索引</el-button>
+      <div class="header-actions">
+        <el-input
+          v-model="searchQuery"
+          placeholder="搜索文档..."
+          prefix-icon="Search"
+          style="width: 220px;"
+          @keyup.enter="handleSearch"
+          clearable
+          @clear="loadDocuments"
+        />
+        <el-button @click="handleSearch">搜索</el-button>
+        <el-button type="primary" icon="Upload" @click="uploadVisible = true">上传文档</el-button>
+        <el-button icon="Refresh" @click="loadDocuments">刷新</el-button>
+        <el-button type="warning" @click="handleReindexAll">全部重索引</el-button>
+      </div>
     </div>
 
-    <div class="toolbar">
-      <el-input
-        v-model="searchQuery"
-        placeholder="搜索文档..."
-        prefix-icon="Search"
-        style="width: 300px; margin-right: 10px;"
-        @keyup.enter="handleSearch"
-        clearable
-        @clear="loadDocuments"
-      />
-      <el-button type="primary" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" icon="Upload" @click="uploadVisible = true">上传文档</el-button>
-      <el-button icon="Refresh" @click="loadDocuments">刷新</el-button>
-    </div>
-
-    <el-table :data="documents" v-loading="loading" style="width: 100%; margin-top: 20px;" border>
+    <el-table :data="documents" v-loading="loading" style="width: 100%;" stripe border>
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="title" label="文档标题" min-width="200" show-overflow-tooltip />
       <el-table-column prop="fileName" label="文件名" width="200" show-overflow-tooltip />
@@ -47,7 +46,9 @@
           <el-tag v-for="r in row.allowedRoles" :key="r" size="small" style="margin: 2px;">{{ r }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createdAt" label="创建时间" width="180" />
+      <el-table-column prop="createdAt" label="创建时间" width="180">
+        <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
+      </el-table-column>
       <el-table-column label="操作" width="240" fixed="right">
         <template #default="{ row }">
           <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
@@ -58,17 +59,17 @@
     </el-table>
 
     <!-- Upload Dialog -->
-    <el-dialog v-model="uploadVisible" title="上传文档" width="550px">
-      <el-form label-width="100px">
+    <el-dialog v-model="uploadVisible" title="上传文档" width="500px" align-center>
+      <el-form label-width="80px" label-position="left">
         <el-form-item label="文档标题">
           <el-input v-model="uploadForm.title" placeholder="可选，留空使用文件名" />
         </el-form-item>
-        <el-form-item label="允许角色" required>
-          <el-select v-model="uploadForm.allowedRoles" multiple placeholder="选择角色" style="width: 100%;">
+        <el-form-item label="允许角色">
+          <el-select v-model="uploadForm.allowedRoles" multiple placeholder="请选择角色" style="width: 100%;">
             <el-option v-for="role in roles" :key="role.name" :label="role.name" :value="role.name" />
           </el-select>
         </el-form-item>
-        <el-form-item label="选择文件" required>
+        <el-form-item label="选择文件">
           <el-upload
             ref="uploadRef"
             :auto-upload="false"
@@ -76,11 +77,12 @@
             :on-change="handleFileChange"
             :on-exceed="() => ElMessage.warning('只能上传一个文件')"
             drag
+            style="width: 100%;"
           >
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-            <div class="el-upload__text">将文件拖到此处或<em>点击上传</em></div>
+            <div class="el-upload__text">拖拽文件到此处，或 <em>点击选择</em></div>
             <template #tip>
-              <div class="el-upload__tip">支持 PDF、Word、TXT 格式</div>
+              <div class="el-upload__tip">仅支持 PDF、TXT 格式，单次限 1 个文件</div>
             </template>
           </el-upload>
         </el-form-item>
@@ -92,8 +94,8 @@
     </el-dialog>
 
     <!-- Edit Dialog -->
-    <el-dialog v-model="editVisible" title="编辑文档" width="550px">
-      <el-form :model="editForm" label-width="100px">
+    <el-dialog v-model="editVisible" title="编辑文档" width="460px" align-center>
+      <el-form :model="editForm" label-width="80px" label-position="left">
         <el-form-item label="文档标题">
           <el-input v-model="editForm.title" />
         </el-form-item>
@@ -257,6 +259,11 @@ const handleReindexAll = async () => {
   } catch { /* interceptor */ }
 }
 
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleString('zh-CN', { hour12: false })
+}
+
 const getStatusType = (status: string) => {
   switch (status) {
     case 'READY': return 'success'
@@ -291,21 +298,19 @@ const formatSize = (bytes: number | null) => {
   border: 1px solid #e8edf5;
   box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
 }
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e8edf5;
-}
-
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  gap: 12px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .page-title {

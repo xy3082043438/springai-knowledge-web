@@ -10,8 +10,8 @@
         text-color="#bfcbd9"
         active-text-color="#409EFF"
       >
-        <div class="logo">
-          <div class="logo-badge">AI</div>
+        <div class="logo" :class="{ 'logo-collapsed': isCollapse }">
+          <img src="/logo.svg" class="logo-badge" alt="logo" />
           <div v-if="!isCollapse" class="logo-text">
             <div class="logo-title">企业知识库</div>
             <div class="logo-subtitle">智能问答助手</div>
@@ -63,7 +63,7 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item>个人信息</el-dropdown-item>
+                  <el-dropdown-item @click="router.push('/profile')">个人信息</el-dropdown-item>
                   <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -85,7 +85,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import {
   Odometer,
   ChatDotRound,
@@ -100,6 +100,7 @@ import {
 import { useUserStore } from '@/store/user'
 
 const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 const isCollapse = ref(false)
 
@@ -147,22 +148,25 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
   height: 68px;
-  padding: 0 16px;
+  padding: 0 18px;
   color: #fff;
   font-weight: 700;
   overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 8px;
+}
+
+.logo-collapsed {
+  justify-content: center;
+  padding: 0;
 }
 
 .logo-badge {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(145deg, #2d8cff, #1f6feb);
-  color: #fff;
-  font-weight: 800;
-  letter-spacing: 1px;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: block;
 }
 
 .logo-text {
@@ -225,18 +229,73 @@ onMounted(async () => {
 }
 
 :deep(.el-menu-vertical .el-menu-item) {
-  margin: 6px 12px;
+  margin: 3px 10px;
   border-radius: 10px;
+  height: 46px;
+  line-height: 46px;
+  font-size: 14px;
+  color: #b8c8dc;
+  transition: all 0.2s;
+}
+
+:deep(.el-menu-vertical .el-menu-item .el-icon) {
+  font-size: 17px;
+  vertical-align: middle;
+}
+
+/* 折叠态：菜单项宽高相等，形成正方形 */
+:deep(.el-menu-vertical.el-menu--collapse) {
+  width: 100%;
+}
+
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 !important;
+  margin: 4px auto;
+  width: 44px;
   height: 44px;
+  line-height: 44px;
+  border-radius: 12px;
+}
+
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item > *) {
+  margin: 0 !important;
+}
+
+:deep(.el-menu-vertical.el-menu--collapse .el-tooltip__trigger) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 !important;
+}
+
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item .el-icon) {
+  margin: 0 !important;
+  font-size: 20px;
 }
 
 :deep(.el-menu-vertical .el-menu-item.is-active) {
-  background: rgba(31, 111, 235, 0.18);
+  background: rgba(45, 140, 255, 0.18);
   color: #ffffff;
+  font-weight: 600;
 }
 
-:deep(.el-menu-vertical .el-menu-item:hover) {
-  background: rgba(255, 255, 255, 0.08);
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item.is-active) {
+  background: rgba(45, 140, 255, 0.25);
+  box-shadow: none;
+}
+
+:deep(.el-menu-vertical .el-menu-item.is-active .el-icon) {
+  color: #5ab4ff;
+}
+
+:deep(.el-menu-vertical .el-menu-item:hover:not(.is-active)) {
+  background: rgba(255, 255, 255, 0.07);
+  color: #e0eaf5;
 }
 
 .fade-transform-enter-active,

@@ -1,25 +1,13 @@
 <template>
   <div class="dashboard-container">
     <div class="hero-card">
-      <div class="hero-left">
-        <div class="hero-title">企业知识库智能问答助手</div>
-        <div class="hero-subtitle">沉淀知识资产，统一检索入口，保障协作一致性</div>
-        <div class="hero-tags">
-          <el-tag type="success" v-if="stats.systemHealthy">系统健康</el-tag>
-          <el-tag type="danger" v-else-if="stats.systemHealthy === false">系统异常</el-tag>
-          <el-tag type="info" v-else>状态未知</el-tag>
-          <span class="hero-status">{{ stats.systemStatus || '加载中...' }}</span>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="hero-metric">
-          <div class="metric-label">问答总数</div>
-          <div class="metric-value">{{ stats.qaCount }}</div>
-        </div>
-        <div class="hero-metric">
-          <div class="metric-label">系统用户</div>
-          <div class="metric-value">{{ stats.userCount }}</div>
-        </div>
+      <div class="hero-title">企业知识库智能问答助手</div>
+      <div class="hero-subtitle">沉淀知识资产，统一检索入口，保障协作一致性</div>
+      <div class="hero-tags">
+        <el-tag type="success" v-if="stats.systemHealthy">系统健康</el-tag>
+        <el-tag type="danger" v-else-if="stats.systemHealthy === false">系统异常</el-tag>
+        <el-tag type="info" v-else>状态未知</el-tag>
+        <span class="hero-status">{{ stats.systemStatus || '加载中...' }}</span>
       </div>
     </div>
 
@@ -75,11 +63,6 @@
         </el-card>
       </el-col>
     </el-row>
-
-    <el-card class="welcome-card" style="margin-top: 20px;">
-      <h1>欢迎使用企业知识库系统</h1>
-      <p>统一采集、分发与检索企业文档，结合检索增强问答服务，提升业务响应效率。</p>
-    </el-card>
   </div>
 </template>
 
@@ -140,10 +123,6 @@ onMounted(async () => {
   border: 1px solid #e7ecf5;
   border-radius: 18px;
   padding: 22px 26px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
   box-shadow: 0 14px 30px rgba(20, 32, 55, 0.08);
 }
 
@@ -170,43 +149,11 @@ onMounted(async () => {
   font-size: 12px;
 }
 
-.hero-right {
-  display: flex;
-  gap: 20px;
-}
-
-.hero-metric {
-  background: #ffffff;
-  border: 1px solid #e8edf5;
-  border-radius: 12px;
-  padding: 12px 16px;
-  min-width: 120px;
-  text-align: center;
-}
-
-.metric-label {
-  color: #6b7280;
-  font-size: 12px;
-}
-
-.metric-value {
-  font-size: 20px;
-  font-weight: 700;
-  margin-top: 6px;
-  color: #1f6feb;
-}
-
 .stat-card :deep(.el-card__header) {
   padding: 14px 18px;
 }
 
 .stat-card :deep(.el-card__body) {
   padding: 16px 18px;
-}
-
-.welcome-card {
-  border-radius: 18px;
-  border: 1px solid #e8edf5;
-  background: #ffffff;
 }
 </style>

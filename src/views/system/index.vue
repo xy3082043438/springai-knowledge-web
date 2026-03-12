@@ -50,11 +50,27 @@ const editingKey = ref<string | null>(null)
 const editValue = ref('')
 const editDescription = ref('')
 
+const HIDDEN_KEYS = new Set([
+  'chunk.size',
+  'chunk.overlap',
+  'chunk.embeddingSafeSize',
+  'hybrid.vectorTopK',
+  'hybrid.keywordTopK',
+  'hybrid.vectorSimilarityThreshold',
+  'hybrid.vectorWeight',
+  'hybrid.keywordWeight',
+  'rag.maxOutputTokens',
+  'rag.temperature',
+  'rag.topP',
+  'keyword.tsConfig',
+  'system.boundary',
+])
+
 const loadConfigs = async () => {
   loading.value = true
   try {
     const { data } = await listConfigs()
-    configs.value = data
+    configs.value = data.filter(c => !HIDDEN_KEYS.has(c.key))
   } finally {
     loading.value = false
   }

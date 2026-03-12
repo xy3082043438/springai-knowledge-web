@@ -60,16 +60,23 @@
       </div>
 
       <div class="chat-input">
-        <el-input
-          v-model="inputMessage"
-          type="textarea"
-          :rows="3"
-          placeholder="基于知识库提问..."
-          @keydown.enter.exact.prevent="sendMessage"
-        />
-        <div class="input-tip">Enter 发送，Shift + Enter 换行</div>
-        <div class="input-actions">
-          <el-button type="primary" @click="sendMessage" :loading="loading">发送</el-button>
+        <div class="input-wrap">
+          <div class="input-box">
+            <el-input
+              v-model="inputMessage"
+              type="textarea"
+              :autosize="{ minRows: 1, maxRows: 5 }"
+              placeholder="基于知识库提问，Enter 发送 / Shift+Enter 换行"
+              @keydown.enter.exact.prevent="sendMessage"
+              resize="none"
+            />
+          </div>
+          <el-button
+            type="primary"
+            class="send-btn"
+            @click="sendMessage"
+            :loading="loading"
+          >发送</el-button>
         </div>
       </div>
     </div>
@@ -251,18 +258,55 @@ const formatMessage = (content: string) => {
 .message.user .text { background-color: #e9f2ff; }
 
 .chat-input {
-  padding: 20px;
+  padding: 16px 20px;
   border-top: 1px solid #eef2f7;
   background-color: #fff;
 }
 
-.input-tip {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #6b7280;
+.input-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
 }
 
-.input-actions { margin-top: 10px; text-align: right; }
+.input-box {
+  flex: 1;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #dce3ef;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 0 14px;
+  transition: border-color 0.2s;
+}
+
+.input-box:focus-within {
+  border-color: #409eff;
+  background: #fff;
+}
+
+.input-box :deep(.el-textarea) {
+  width: 100%;
+}
+
+.input-box :deep(.el-textarea__inner) {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  resize: none;
+  line-height: 1.6;
+}
+
+.send-btn {
+  flex-shrink: 0;
+  height: 56px;
+  padding: 0 28px;
+  font-size: 15px;
+  border-radius: 12px;
+}
 
 .preview-panel { width: 400px; display: flex; flex-direction: column; }
 .preview-card { height: 100%; overflow-y: auto; }

@@ -8,16 +8,20 @@
       <el-button type="primary" icon="Plus" @click="handleAdd">添加用户</el-button>
     </div>
 
-    <el-table :data="users" v-loading="loading" style="width: 100%; margin-top: 20px;" border>
+    <el-table :data="users" v-loading="loading" style="width: 100%;" stripe border>
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="username" label="用户名" width="180" />
       <el-table-column prop="role" label="角色" width="150">
         <template #default="{ row }">
-          <el-tag :type="row.role === 'admin' ? 'danger' : 'info'">{{ row.role || '-' }}</el-tag>
+          <el-tag :type="row.role?.toUpperCase() === 'ADMIN' ? 'danger' : 'info'" size="small">{{ row.role || '-' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createdAt" label="创建时间" width="200" />
-      <el-table-column prop="updatedAt" label="更新时间" width="200" />
+      <el-table-column prop="createdAt" label="创建时间" width="200">
+        <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
+      </el-table-column>
+      <el-table-column prop="updatedAt" label="更新时间" width="200">
+        <template #default="{ row }">{{ formatDate(row.updatedAt) }}</template>
+      </el-table-column>
       <el-table-column label="操作" width="150" fixed="right">
         <template #default="{ row }">
           <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
@@ -117,6 +121,11 @@ const handleEdit = (row: UserResponse) => {
   userForm.role = row.role || ''
   userForm.password = ''
   dialogVisible.value = true
+}
+
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleString('zh-CN', { hour12: false })
 }
 
 const saveUser = async () => {
