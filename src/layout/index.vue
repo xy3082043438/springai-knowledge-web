@@ -17,29 +17,9 @@
             <div class="logo-subtitle">智能问答助手</div>
           </div>
         </div>
-        <el-menu-item index="/dashboard">
-          <el-icon><Odometer /></el-icon>
-          <template #title>仪表盘</template>
-        </el-menu-item>
-        <el-menu-item index="/qa">
-          <el-icon><ChatDotRound /></el-icon>
-          <template #title>智能问答</template>
-        </el-menu-item>
-        <el-menu-item index="/knowledge">
-          <el-icon><Document /></el-icon>
-          <template #title>知识库管理</template>
-        </el-menu-item>
-        <el-menu-item index="/users">
-          <el-icon><User /></el-icon>
-          <template #title>用户管理</template>
-        </el-menu-item>
-        <el-menu-item index="/logs">
-          <el-icon><List /></el-icon>
-          <template #title>日志与反馈</template>
-        </el-menu-item>
-        <el-menu-item index="/system">
-          <el-icon><Setting /></el-icon>
-          <template #title>系统配置</template>
+        <el-menu-item v-for="item in visibleMenuItems" :key="item.path" :index="item.path">
+          <el-icon><component :is="item.icon" /></el-icon>
+          <template #title>{{ item.title }}</template>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -84,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, type Component } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   Odometer,
@@ -98,27 +78,48 @@ import {
   ArrowDown,
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
+import { ADMIN_ROLE, hasAnyRole } from '@/utils/access'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const isCollapse = ref(false)
 
+interface MenuItem {
+  path: string
+  title: string
+  icon: Component
+  roles?: string[]
+}
+
+const menuItems: MenuItem[] = [
+  { path: '/dashboard', title: '仪表盘', icon: Odometer },
+  { path: '/qa', title: '智能问答', icon: ChatDotRound },
+  { path: '/knowledge', title: '知识库管理', icon: Document },
+  { path: '/users', title: '用户管理', icon: User, roles: [ADMIN_ROLE] },
+  { path: '/logs', title: '日志与反馈', icon: List, roles: [ADMIN_ROLE] },
+  { path: '/system', title: '系统配置', icon: Setting, roles: [ADMIN_ROLE] },
+]
+
 const activeMenu = computed(() => route.path)
 const displayName = computed(() => userStore.userInfo?.username || '用户')
+const visibleMenuItems = computed(() =>
+  menuItems.filter((item) => hasAnyRole(userStore.userInfo?.role, item.roles))
+)
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
 }
 
-const handleLogout = () => {
-  userStore.logout()
+const handleLogout = async () => {
+  await userStore.logout()
+  router.push('/login')
 }
 
 onMounted(async () => {
   if (userStore.token && !userStore.userInfo) {
     try {
-      await userStore.fetchUserInfo()
+      await userStore.ensureUserInfo()
     } catch {
       // interceptor handles 401
     }

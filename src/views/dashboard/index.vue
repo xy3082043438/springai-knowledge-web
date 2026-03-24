@@ -12,7 +12,7 @@
     </div>
 
     <el-row :gutter="20">
-      <el-col :span="6">
+      <el-col :span="metricSpan">
         <el-card shadow="hover" class="stat-card">
           <template #header>
             <div class="card-header">
@@ -24,7 +24,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col v-if="showAdminMetrics" :span="6">
         <el-card shadow="hover" class="stat-card">
           <template #header>
             <div class="card-header">
@@ -36,7 +36,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col v-if="showAdminMetrics" :span="6">
         <el-card shadow="hover" class="stat-card">
           <template #header>
             <div class="card-header">
@@ -48,7 +48,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="metricSpan">
         <el-card shadow="hover" class="stat-card">
           <template #header>
             <div class="card-header">
@@ -67,12 +67,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
+import { computed, reactive, onMounted } from 'vue'
 import { listDocuments } from '@/api/document'
 import { listUsers } from '@/api/user'
 import { searchQaLogs } from '@/api/log'
 import { getSystemStatus } from '@/api/config'
 import { useUserStore } from '@/store/user'
+import { isAdminRole } from '@/utils/access'
 
 const stats = reactive({
   docCount: 0,
@@ -83,20 +84,20 @@ const stats = reactive({
 })
 
 const userStore = useUserStore()
-
-const isAdmin = () => userStore.userInfo?.role?.toUpperCase() === 'ADMIN'
+const showAdminMetrics = computed(() => isAdminRole(userStore.userInfo?.role))
+const metricSpan = computed(() => (showAdminMetrics.value ? 6 : 12))
 
 onMounted(async () => {
   try {
     if (userStore.token && !userStore.userInfo) {
-      await userStore.fetchUserInfo()
+      await userStore.ensureUserInfo()
     }
 
     const requests = await Promise.allSettled([
       listDocuments(),
       getSystemStatus(),
-      isAdmin() ? listUsers() : Promise.resolve(null),
-      isAdmin() ? searchQaLogs({ page: 0, size: 1 }) : Promise.resolve(null),
+      showAdminMetrics.value ? listUsers() : Promise.resolve(null),
+      showAdminMetrics.value ? searchQaLogs({ page: 0, size: 1 }) : Promise.resolve(null),
     ])
 
     const [docRes, statusRes, userRes, qaRes] = requests

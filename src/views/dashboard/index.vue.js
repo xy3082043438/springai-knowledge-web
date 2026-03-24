@@ -1,10 +1,11 @@
 /// <reference types="../../../node_modules/.vue-global-types/vue_3.5_0_0_0.d.ts" />
-import { reactive, onMounted } from 'vue';
+import { computed, reactive, onMounted } from 'vue';
 import { listDocuments } from '@/api/document';
 import { listUsers } from '@/api/user';
 import { searchQaLogs } from '@/api/log';
 import { getSystemStatus } from '@/api/config';
 import { useUserStore } from '@/store/user';
+import { isAdminRole } from '@/utils/access';
 const stats = reactive({
     docCount: 0,
     qaCount: 0,
@@ -13,17 +14,18 @@ const stats = reactive({
     systemHealthy: null,
 });
 const userStore = useUserStore();
-const isAdmin = () => userStore.userInfo?.role?.toUpperCase() === 'ADMIN';
+const showAdminMetrics = computed(() => isAdminRole(userStore.userInfo?.role));
+const metricSpan = computed(() => (showAdminMetrics.value ? 6 : 12));
 onMounted(async () => {
     try {
         if (userStore.token && !userStore.userInfo) {
-            await userStore.fetchUserInfo();
+            await userStore.ensureUserInfo();
         }
         const requests = await Promise.allSettled([
             listDocuments(),
             getSystemStatus(),
-            isAdmin() ? listUsers() : Promise.resolve(null),
-            isAdmin() ? searchQaLogs({ page: 0, size: 1 }) : Promise.resolve(null),
+            showAdminMetrics.value ? listUsers() : Promise.resolve(null),
+            showAdminMetrics.value ? searchQaLogs({ page: 0, size: 1 }) : Promise.resolve(null),
         ]);
         const [docRes, statusRes, userRes, qaRes] = requests;
         if (docRes.status === 'fulfilled') {
@@ -123,10 +125,10 @@ const __VLS_16 = {}.ElCol;
 /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
 // @ts-ignore
 const __VLS_17 = __VLS_asFunctionalComponent(__VLS_16, new __VLS_16({
-    span: (6),
+    span: (__VLS_ctx.metricSpan),
 }));
 const __VLS_18 = __VLS_17({
-    span: (6),
+    span: (__VLS_ctx.metricSpan),
 }, ...__VLS_functionalComponentArgsRest(__VLS_17));
 __VLS_19.slots.default;
 const __VLS_20 = {}.ElCard;
@@ -155,86 +157,90 @@ __VLS_asFunctionalElement(__VLS_intrinsicElements.h2, __VLS_intrinsicElements.h2
 (__VLS_ctx.stats.docCount);
 var __VLS_23;
 var __VLS_19;
-const __VLS_24 = {}.ElCol;
-/** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
-// @ts-ignore
-const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
-    span: (6),
-}));
-const __VLS_26 = __VLS_25({
-    span: (6),
-}, ...__VLS_functionalComponentArgsRest(__VLS_25));
-__VLS_27.slots.default;
-const __VLS_28 = {}.ElCard;
-/** @type {[typeof __VLS_components.ElCard, typeof __VLS_components.elCard, typeof __VLS_components.ElCard, typeof __VLS_components.elCard, ]} */ ;
-// @ts-ignore
-const __VLS_29 = __VLS_asFunctionalComponent(__VLS_28, new __VLS_28({
-    shadow: "hover",
-    ...{ class: "stat-card" },
-}));
-const __VLS_30 = __VLS_29({
-    shadow: "hover",
-    ...{ class: "stat-card" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_29));
-__VLS_31.slots.default;
-{
-    const { header: __VLS_thisSlot } = __VLS_31.slots;
+if (__VLS_ctx.showAdminMetrics) {
+    const __VLS_24 = {}.ElCol;
+    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
+    // @ts-ignore
+    const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
+        span: (6),
+    }));
+    const __VLS_26 = __VLS_25({
+        span: (6),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_25));
+    __VLS_27.slots.default;
+    const __VLS_28 = {}.ElCard;
+    /** @type {[typeof __VLS_components.ElCard, typeof __VLS_components.elCard, typeof __VLS_components.ElCard, typeof __VLS_components.elCard, ]} */ ;
+    // @ts-ignore
+    const __VLS_29 = __VLS_asFunctionalComponent(__VLS_28, new __VLS_28({
+        shadow: "hover",
+        ...{ class: "stat-card" },
+    }));
+    const __VLS_30 = __VLS_29({
+        shadow: "hover",
+        ...{ class: "stat-card" },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_29));
+    __VLS_31.slots.default;
+    {
+        const { header: __VLS_thisSlot } = __VLS_31.slots;
+        __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+            ...{ class: "card-header" },
+        });
+        __VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({});
+    }
     __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
-        ...{ class: "card-header" },
+        ...{ class: "card-content" },
     });
-    __VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({});
+    __VLS_asFunctionalElement(__VLS_intrinsicElements.h2, __VLS_intrinsicElements.h2)({});
+    (__VLS_ctx.stats.qaCount);
+    var __VLS_31;
+    var __VLS_27;
 }
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
-    ...{ class: "card-content" },
-});
-__VLS_asFunctionalElement(__VLS_intrinsicElements.h2, __VLS_intrinsicElements.h2)({});
-(__VLS_ctx.stats.qaCount);
-var __VLS_31;
-var __VLS_27;
-const __VLS_32 = {}.ElCol;
-/** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
-// @ts-ignore
-const __VLS_33 = __VLS_asFunctionalComponent(__VLS_32, new __VLS_32({
-    span: (6),
-}));
-const __VLS_34 = __VLS_33({
-    span: (6),
-}, ...__VLS_functionalComponentArgsRest(__VLS_33));
-__VLS_35.slots.default;
-const __VLS_36 = {}.ElCard;
-/** @type {[typeof __VLS_components.ElCard, typeof __VLS_components.elCard, typeof __VLS_components.ElCard, typeof __VLS_components.elCard, ]} */ ;
-// @ts-ignore
-const __VLS_37 = __VLS_asFunctionalComponent(__VLS_36, new __VLS_36({
-    shadow: "hover",
-    ...{ class: "stat-card" },
-}));
-const __VLS_38 = __VLS_37({
-    shadow: "hover",
-    ...{ class: "stat-card" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_37));
-__VLS_39.slots.default;
-{
-    const { header: __VLS_thisSlot } = __VLS_39.slots;
+if (__VLS_ctx.showAdminMetrics) {
+    const __VLS_32 = {}.ElCol;
+    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
+    // @ts-ignore
+    const __VLS_33 = __VLS_asFunctionalComponent(__VLS_32, new __VLS_32({
+        span: (6),
+    }));
+    const __VLS_34 = __VLS_33({
+        span: (6),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_33));
+    __VLS_35.slots.default;
+    const __VLS_36 = {}.ElCard;
+    /** @type {[typeof __VLS_components.ElCard, typeof __VLS_components.elCard, typeof __VLS_components.ElCard, typeof __VLS_components.elCard, ]} */ ;
+    // @ts-ignore
+    const __VLS_37 = __VLS_asFunctionalComponent(__VLS_36, new __VLS_36({
+        shadow: "hover",
+        ...{ class: "stat-card" },
+    }));
+    const __VLS_38 = __VLS_37({
+        shadow: "hover",
+        ...{ class: "stat-card" },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_37));
+    __VLS_39.slots.default;
+    {
+        const { header: __VLS_thisSlot } = __VLS_39.slots;
+        __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+            ...{ class: "card-header" },
+        });
+        __VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({});
+    }
     __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
-        ...{ class: "card-header" },
+        ...{ class: "card-content" },
     });
-    __VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({});
+    __VLS_asFunctionalElement(__VLS_intrinsicElements.h2, __VLS_intrinsicElements.h2)({});
+    (__VLS_ctx.stats.userCount);
+    var __VLS_39;
+    var __VLS_35;
 }
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
-    ...{ class: "card-content" },
-});
-__VLS_asFunctionalElement(__VLS_intrinsicElements.h2, __VLS_intrinsicElements.h2)({});
-(__VLS_ctx.stats.userCount);
-var __VLS_39;
-var __VLS_35;
 const __VLS_40 = {}.ElCol;
 /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
 // @ts-ignore
 const __VLS_41 = __VLS_asFunctionalComponent(__VLS_40, new __VLS_40({
-    span: (6),
+    span: (__VLS_ctx.metricSpan),
 }));
 const __VLS_42 = __VLS_41({
-    span: (6),
+    span: (__VLS_ctx.metricSpan),
 }, ...__VLS_functionalComponentArgsRest(__VLS_41));
 __VLS_43.slots.default;
 const __VLS_44 = {}.ElCard;
@@ -297,6 +303,8 @@ const __VLS_self = (await import('vue')).defineComponent({
     setup() {
         return {
             stats: stats,
+            showAdminMetrics: showAdminMetrics,
+            metricSpan: metricSpan,
         };
     },
 });

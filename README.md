@@ -158,7 +158,8 @@ npm run preview
 
 - JWT token 保存在 `localStorage.token`
 - Axios 请求会自动附加 `Authorization: Bearer <token>`
-- 当接口返回 `401` 或 `403` 时，前端会清理 token 并跳转 `/login`
+- 当接口返回 `401` 且不是登录接口时，前端会清理 token 并跳转 `/login`
+- 当接口返回 `403` 时，前端保留当前登录态，并提示“权限不足”
 - Axios 超时时间当前为 `30000ms`
 
 ## 页面说明
@@ -203,7 +204,7 @@ npm run preview
 ### 页面打开后立即跳回登录页
 
 - 检查后端是否正常返回 JWT
-- 检查接口是否返回了 `401/403`
+- 检查接口是否返回了 `401`
 - 检查浏览器中是否存在 `localStorage.token`
 
 ### 页面数据为空或接口 404

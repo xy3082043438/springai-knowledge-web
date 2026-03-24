@@ -6,6 +6,7 @@
         <div class="page-subtitle">上传、维护与索引企业文档，保障检索质量</div>
       </div>
       <div class="header-actions">
+        <el-tag v-if="!canManageKnowledge" type="info" effect="plain">只读视图</el-tag>
         <el-input
           v-model="searchQuery"
           placeholder="搜索文档..."
@@ -16,9 +17,9 @@
           @clear="loadDocuments"
         />
         <el-button @click="handleSearch">搜索</el-button>
-        <el-button type="primary" icon="Upload" @click="uploadVisible = true">上传文档</el-button>
         <el-button icon="Refresh" @click="loadDocuments">刷新</el-button>
-        <el-button type="warning" @click="handleReindexAll">全部重索引</el-button>
+        <el-button v-if="canManageKnowledge" type="primary" icon="Upload" @click="uploadVisible = true">上传文档</el-button>
+        <el-button v-if="canManageKnowledge" type="warning" @click="handleReindexAll">全部重索引</el-button>
       </div>
     </div>
 
@@ -49,7 +50,7 @@
       <el-table-column prop="createdAt" label="创建时间" width="180">
         <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
       </el-table-column>
-      <el-table-column label="操作" width="240" fixed="right">
+      <el-table-column v-if="canManageKnowledge" label="操作" width="240" fixed="right">
         <template #default="{ row }">
           <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
           <el-button link type="warning" size="small" @click="handleReindex(row)">重索引</el-button>
@@ -114,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
 import type { UploadFile } from 'element-plus'
@@ -128,12 +129,16 @@ import {
   reindexOne,
 } from '@/api/document'
 import { listRoles } from '@/api/role'
+import { useUserStore } from '@/store/user'
+import { isAdminRole } from '@/utils/access'
 import type { DocumentSummaryResponse, RoleResponse } from '@/types/api'
 
+const userStore = useUserStore()
 const searchQuery = ref('')
 const loading = ref(false)
 const documents = ref<DocumentSummaryResponse[]>([])
 const roles = ref<RoleResponse[]>([])
+const canManageKnowledge = computed(() => isAdminRole(userStore.userInfo?.role))
 
 // Upload
 const uploadVisible = ref(false)
@@ -163,9 +168,20 @@ const loadRoles = async () => {
   } catch { /* ignore */ }
 }
 
-onMounted(() => {
-  loadDocuments()
-  loadRoles()
+onMounted(async () => {
+  if (userStore.token && !userStore.userInfo) {
+    try {
+      await userStore.ensureUserInfo()
+    } catch {
+      return
+    }
+  }
+
+  await loadDocuments()
+
+  if (canManageKnowledge.value) {
+    loadRoles()
+  }
 })
 
 const handleSearch = async () => {

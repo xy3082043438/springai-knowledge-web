@@ -1,5 +1,5 @@
 /// <reference types="../../../node_modules/.vue-global-types/vue_3.5_0_0_0.d.ts" />
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/store/user';
@@ -20,6 +20,13 @@ const rules = reactive({
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 6, max: 100, message: '密码长度 6-100', trigger: 'blur' },
     ]
+});
+onMounted(() => {
+    const authRedirectMessage = sessionStorage.getItem('auth_redirect_message');
+    if (authRedirectMessage) {
+        ElMessage.warning(authRedirectMessage);
+        sessionStorage.removeItem('auth_redirect_message');
+    }
 });
 const handleLogin = async () => {
     if (!loginFormRef.value)
