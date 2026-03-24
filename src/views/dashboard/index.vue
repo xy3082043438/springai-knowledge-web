@@ -72,6 +72,7 @@ import { listDocuments } from '@/api/document'
 import { listUsers } from '@/api/user'
 import { searchQaLogs } from '@/api/log'
 import { getSystemStatus } from '@/api/config'
+import { useUserStore } from '@/store/user'
 
 const stats = reactive({
   docCount: 0,
@@ -81,21 +82,43 @@ const stats = reactive({
   systemHealthy: null as boolean | null,
 })
 
+const userStore = useUserStore()
+
+const isAdmin = () => userStore.userInfo?.role?.toUpperCase() === 'ADMIN'
+
 onMounted(async () => {
   try {
-    const [docRes, userRes, qaRes, statusRes] = await Promise.all([
+    if (userStore.token && !userStore.userInfo) {
+      await userStore.fetchUserInfo()
+    }
+
+    const requests = await Promise.allSettled([
       listDocuments(),
-      listUsers(),
-      searchQaLogs({ page: 0, size: 1 }),
       getSystemStatus(),
+      isAdmin() ? listUsers() : Promise.resolve(null),
+      isAdmin() ? searchQaLogs({ page: 0, size: 1 }) : Promise.resolve(null),
     ])
-    stats.docCount = docRes.data.length
-    stats.userCount = userRes.data.length
-    stats.qaCount = qaRes.data.total
-    stats.systemStatus = statusRes.data.message || statusRes.data.status
-    stats.systemHealthy = statusRes.data.healthy
+
+    const [docRes, statusRes, userRes, qaRes] = requests
+
+    if (docRes.status === 'fulfilled') {
+      stats.docCount = docRes.value.data.length
+    }
+
+    if (statusRes.status === 'fulfilled') {
+      stats.systemStatus = statusRes.value.data.message || statusRes.value.data.status
+      stats.systemHealthy = statusRes.value.data.healthy
+    }
+
+    if (userRes.status === 'fulfilled' && userRes.value) {
+      stats.userCount = userRes.value.data.length
+    }
+
+    if (qaRes.status === 'fulfilled' && qaRes.value) {
+      stats.qaCount = qaRes.value.data.total
+    }
   } catch {
-    // errors handled by interceptor
+    // individual request errors are handled by interceptor
   }
 })
 </script>
