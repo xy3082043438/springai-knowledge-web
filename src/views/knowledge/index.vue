@@ -18,7 +18,8 @@
         />
         <el-button @click="handleSearch">搜索</el-button>
         <el-button icon="Refresh" @click="loadDocuments">刷新</el-button>
-        <el-button v-if="canManageKnowledge" type="primary" icon="Upload" @click="uploadVisible = true">上传文档</el-button>
+        <el-button v-if="canManageKnowledge" type="success" @click="createVisible = true">文本录入</el-button>
+        <el-button v-if="canManageKnowledge" type="primary" icon="Upload" @click="uploadVisible = true">上传文件</el-button>
         <el-button v-if="canManageKnowledge" type="warning" @click="handleReindexAll">全部重索引</el-button>
       </div>
     </div>
@@ -26,10 +27,14 @@
     <el-table :data="documents" v-loading="loading" style="width: 100%;" stripe border>
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="title" label="文档标题" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="fileName" label="文件名" width="200" show-overflow-tooltip />
+      <el-table-column label="文件名" width="200" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ getFileNameLabel(row) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="contentType" label="类型" width="120">
         <template #default="{ row }">
-          <el-tag size="small">{{ row.contentType || '-' }}</el-tag>
+          <el-tag size="small">{{ getContentTypeLabel(row) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="大小" width="100">
@@ -59,8 +64,36 @@
       </el-table-column>
     </el-table>
 
+    <!-- Create Text Dialog -->
+    <el-dialog v-model="createVisible" title="文本录入" width="620px" align-center @closed="resetCreateDialog">
+      <el-form label-width="80px" label-position="left">
+        <el-form-item label="文档标题" required>
+          <el-input v-model="createForm.title" maxlength="120" show-word-limit placeholder="请输入文档标题" />
+        </el-form-item>
+        <el-form-item label="允许角色">
+          <el-select v-model="createForm.allowedRoles" multiple placeholder="请选择角色" style="width: 100%;">
+            <el-option v-for="role in roles" :key="role.name" :label="role.name" :value="role.name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="文档内容" required>
+          <el-input
+            v-model="createForm.content"
+            type="textarea"
+            :rows="12"
+            maxlength="20000"
+            show-word-limit
+            placeholder="请输入要写入知识库的文本内容"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="createVisible = false">取消</el-button>
+        <el-button type="primary" :loading="creating" @click="submitCreate">保存</el-button>
+      </template>
+    </el-dialog>
+
     <!-- Upload Dialog -->
-    <el-dialog v-model="uploadVisible" title="上传文档" width="500px" align-center>
+    <el-dialog v-model="uploadVisible" title="上传文件" width="500px" align-center @closed="resetUploadDialog">
       <el-form label-width="80px" label-position="left">
         <el-form-item label="文档标题">
           <el-input v-model="uploadForm.title" placeholder="可选，留空使用文件名" />
@@ -73,9 +106,11 @@
         <el-form-item label="选择文件">
           <el-upload
             ref="uploadRef"
+            :accept="supportedFileAccept"
             :auto-upload="false"
             :limit="1"
             :on-change="handleFileChange"
+            :on-remove="handleFileRemove"
             :on-exceed="() => ElMessage.warning('只能上传一个文件')"
             drag
             style="width: 100%;"
@@ -83,7 +118,7 @@
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div class="el-upload__text">拖拽文件到此处，或 <em>点击选择</em></div>
             <template #tip>
-              <div class="el-upload__tip">仅支持 PDF、TXT 格式，单次限 1 个文件</div>
+              <div class="el-upload__tip">支持 {{ supportedFileLabel }}，单次限 1 个文件</div>
             </template>
           </el-upload>
         </el-form-item>
@@ -118,10 +153,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
-import type { UploadFile } from 'element-plus'
+import type { UploadFile, UploadInstance } from 'element-plus'
 import {
   listDocuments,
   searchDocuments,
+  createDocument,
   uploadDocument,
   updateDocument,
   deleteDocument,
@@ -133,6 +169,10 @@ import { useUserStore } from '@/store/user'
 import { isAdminRole } from '@/utils/access'
 import type { DocumentSummaryResponse, RoleResponse } from '@/types/api'
 
+const supportedFileExtensions = ['pdf', 'docx', 'pptx', 'xlsx', 'txt', 'md', 'markdown', 'html', 'htm', 'csv']
+const supportedFileAccept = supportedFileExtensions.map((ext) => `.${ext}`).join(',')
+const supportedFileLabel = 'PDF、DOCX、PPTX、XLSX、TXT、MD、HTML、CSV'
+
 const userStore = useUserStore()
 const searchQuery = ref('')
 const loading = ref(false)
@@ -140,10 +180,15 @@ const documents = ref<DocumentSummaryResponse[]>([])
 const roles = ref<RoleResponse[]>([])
 const canManageKnowledge = computed(() => isAdminRole(userStore.userInfo?.role))
 
+// Create Text
+const createVisible = ref(false)
+const creating = ref(false)
+const createForm = ref({ title: '', content: '', allowedRoles: [] as string[] })
+
 // Upload
 const uploadVisible = ref(false)
 const uploading = ref(false)
-const uploadRef = ref()
+const uploadRef = ref<UploadInstance>()
 const selectedFile = ref<File | null>(null)
 const uploadForm = ref({ title: '', allowedRoles: [] as string[] })
 
@@ -198,13 +243,83 @@ const handleSearch = async () => {
   }
 }
 
+const resetCreateDialog = () => {
+  createForm.value = { title: '', content: '', allowedRoles: [] }
+}
+
+const submitCreate = async () => {
+  const title = createForm.value.title.trim()
+  const content = createForm.value.content
+
+  if (!title) {
+    ElMessage.warning('请输入文档标题')
+    return
+  }
+  if (!content.trim()) {
+    ElMessage.warning('请输入文档内容')
+    return
+  }
+  if (createForm.value.allowedRoles.length === 0) {
+    ElMessage.warning('请选择至少一个允许角色')
+    return
+  }
+
+  creating.value = true
+  try {
+    await createDocument({
+      title,
+      content,
+      allowedRoles: createForm.value.allowedRoles,
+    })
+    ElMessage.success('保存成功')
+    createVisible.value = false
+    resetCreateDialog()
+    loadDocuments()
+  } finally {
+    creating.value = false
+  }
+}
+
+const getFileExtension = (fileName?: string) => {
+  if (!fileName) return ''
+  const index = fileName.lastIndexOf('.')
+  return index >= 0 ? fileName.slice(index + 1).toLowerCase() : ''
+}
+
+const isSupportedFile = (file: File) => supportedFileExtensions.includes(getFileExtension(file.name))
+
+const resetUploadDialog = () => {
+  uploadForm.value = { title: '', allowedRoles: [] }
+  selectedFile.value = null
+  uploadRef.value?.clearFiles()
+}
+
 const handleFileChange = (file: UploadFile) => {
-  selectedFile.value = file.raw || null
+  const rawFile = file.raw || null
+  if (!rawFile) {
+    selectedFile.value = null
+    return
+  }
+  if (!isSupportedFile(rawFile)) {
+    selectedFile.value = null
+    ElMessage.error(`仅支持 ${supportedFileLabel} 格式`)
+    uploadRef.value?.clearFiles()
+    return
+  }
+  selectedFile.value = rawFile
+}
+
+const handleFileRemove = () => {
+  selectedFile.value = null
 }
 
 const submitUpload = async () => {
   if (!selectedFile.value) {
     ElMessage.warning('请选择文件')
+    return
+  }
+  if (!isSupportedFile(selectedFile.value)) {
+    ElMessage.warning(`仅支持 ${supportedFileLabel} 格式`)
     return
   }
   if (uploadForm.value.allowedRoles.length === 0) {
@@ -220,8 +335,7 @@ const submitUpload = async () => {
     )
     ElMessage.success('上传成功')
     uploadVisible.value = false
-    uploadForm.value = { title: '', allowedRoles: [] }
-    selectedFile.value = null
+    resetUploadDialog()
     loadDocuments()
   } finally {
     uploading.value = false
@@ -280,6 +394,15 @@ const formatDate = (dateStr?: string) => {
   return new Date(dateStr).toLocaleString('zh-CN', { hour12: false })
 }
 
+const getFileNameLabel = (row: DocumentSummaryResponse) => row.fileName || '文本录入'
+
+const getContentTypeLabel = (row: DocumentSummaryResponse) => {
+  if (row.contentType) return row.contentType
+  if (!row.fileName) return 'TEXT'
+  const extension = getFileExtension(row.fileName)
+  return extension ? extension.toUpperCase() : '-'
+}
+
 const getStatusType = (status: string) => {
   switch (status) {
     case 'READY': return 'success'
@@ -299,7 +422,7 @@ const getStatusLabel = (status: string) => {
 }
 
 const formatSize = (bytes: number | null) => {
-  if (!bytes) return '-'
+  if (bytes == null) return '-'
   if (bytes < 1024) return bytes + ' B'
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
   return (bytes / 1024 / 1024).toFixed(1) + ' MB'
