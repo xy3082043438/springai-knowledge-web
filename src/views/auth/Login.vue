@@ -138,4 +138,13 @@ const handleLogin = async () => {
 .login-btn {
   width: 100%;
 }
+
+/* 解决浏览器自动填充导致的输入框背景色改变变暗变怪问题 */
+:deep(.el-input__inner:-webkit-autofill),
+:deep(.el-input__inner:-webkit-autofill:hover),
+:deep(.el-input__inner:-webkit-autofill:focus),
+:deep(.el-input__inner:-webkit-autofill:active) {
+  -webkit-text-fill-color: var(--el-text-color-primary) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
 </style>

@@ -278,15 +278,22 @@ onMounted(async () => {
 
 :deep(.el-menu-vertical.el-menu--collapse .el-menu-item),
 :deep(.el-menu-vertical.el-menu--collapse .el-sub-menu__title) {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   padding: 0 !important;
-  margin: 4px auto;
-  width: 44px;
-  height: 44px;
-  line-height: 44px;
-  border-radius: 12px;
+  margin: 4px auto !important;
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
+}
+
+/* 强制隐藏子菜单中多余的元素，防止带偏 Flex 居中计算 */
+:deep(.el-menu-vertical.el-menu--collapse .el-sub-menu__title span),
+:deep(.el-menu-vertical.el-menu--collapse .el-sub-menu__title .el-sub-menu__icon-arrow) {
+  display: none !important;
 }
 
 :deep(.el-menu-vertical.el-menu--collapse .el-menu-item > *),
@@ -294,13 +301,14 @@ onMounted(async () => {
   margin: 0 !important;
 }
 
-:deep(.el-menu-vertical.el-menu--collapse .el-tooltip__trigger) {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item .el-tooltip__trigger) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
   padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
 :deep(.el-menu-vertical.el-menu--collapse .el-menu-item .el-icon),
