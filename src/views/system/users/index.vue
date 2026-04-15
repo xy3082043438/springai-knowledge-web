@@ -40,7 +40,7 @@
           <el-input v-model="userForm.username" />
         </el-form-item>
         <el-form-item label="角色">
-          <el-select v-model="userForm.role" placeholder="选择角色" clearable style="width: 100%;">
+          <el-select v-model="userForm.role" placeholder="点击选择对应角色..." clearable style="width: 100%;">
             <el-option v-for="role in roles" :key="role.name" :label="role.name" :value="role.name" />
           </el-select>
         </el-form-item>
@@ -154,7 +154,7 @@ const saveUser = async () => {
         })
       }
       dialogVisible.value = false
-      ElMessage.success('保存成功')
+      ElMessage.success('提交成功！您的修改已保存。')
       loadData()
     } finally {
       saving.value = false
@@ -163,14 +163,14 @@ const saveUser = async () => {
 }
 
 const handleDelete = (row: UserResponse) => {
-  ElMessageBox.confirm(`确定要删除用户 "${row.username}" 吗？`, '警告', {
-    confirmButtonText: '确定',
+  ElMessageBox.confirm(`您确定要彻底删除用户 "${row.username}" 吗？此操作无法撤销。`, '请确认删除', {
+    confirmButtonText: '确认删除',
     cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
     try {
       await deleteUser(row.id)
-      ElMessage.success('删除成功')
+      ElMessage.success('删除操作已成功完成。')
       loadData()
     } catch (e: any) {
       // 错误由拦截器统一处理

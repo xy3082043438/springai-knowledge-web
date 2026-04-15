@@ -74,7 +74,7 @@ const handlePreviewChunk = async (chunkId) => {
         currentChunk.value = data;
     }
     catch {
-        ElMessage.error('预览加载失败');
+        ElMessage.error('抱歉，预览内容加载失败，请重试。');
     }
 };
 const handleFeedback = (msg, helpful) => {
@@ -96,7 +96,7 @@ const submitFeedback = async () => {
             comment: feedbackDialog.form.comment || undefined
         });
         feedbackDialog.msg.feedbackGiven = feedbackDialog.helpful;
-        ElMessage.success('感谢您的反馈！');
+        ElMessage.success('感谢您的宝贵反馈！我们将持续改进。');
         feedbackDialog.visible = false;
     }
     catch (err) {
@@ -342,7 +342,7 @@ const __VLS_37 = __VLS_asFunctionalComponent(__VLS_36, new __VLS_36({
     modelValue: (__VLS_ctx.inputMessage),
     type: "textarea",
     autosize: ({ minRows: 1, maxRows: 5 }),
-    placeholder: "基于知识库提问，Enter 发送 / Shift+Enter 换行",
+    placeholder: "在此输入您的问题，系统将基于知识库为您解答（按 Enter 发送，Shift+Enter 换行）...",
     resize: "none",
 }));
 const __VLS_38 = __VLS_37({
@@ -350,7 +350,7 @@ const __VLS_38 = __VLS_37({
     modelValue: (__VLS_ctx.inputMessage),
     type: "textarea",
     autosize: ({ minRows: 1, maxRows: 5 }),
-    placeholder: "基于知识库提问，Enter 发送 / Shift+Enter 换行",
+    placeholder: "在此输入您的问题，系统将基于知识库为您解答（按 Enter 发送，Shift+Enter 换行）...",
     resize: "none",
 }, ...__VLS_functionalComponentArgsRest(__VLS_37));
 let __VLS_40;

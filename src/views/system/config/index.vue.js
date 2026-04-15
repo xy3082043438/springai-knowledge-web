@@ -44,7 +44,7 @@ const cancelEdit = () => {
 };
 const saveConfig = async (key) => {
     if (!editValue.value.trim()) {
-        ElMessage.warning('配置值不能为空');
+        ElMessage.warning('配置值不能为空，请填写完整后再提交。');
         return;
     }
     try {
@@ -52,7 +52,7 @@ const saveConfig = async (key) => {
             value: editValue.value,
             description: editDescription.value || undefined,
         });
-        ElMessage.success('保存成功');
+        ElMessage.success('提交成功！您的修改已保存。');
         editingKey.value = null;
         loadConfigs();
     }
@@ -61,7 +61,7 @@ const saveConfig = async (key) => {
 const handleRefresh = async () => {
     try {
         await refreshConfig();
-        ElMessage.success('全局配置已刷新');
+        ElMessage.success('全局配置已刷新，最新设置已生效。');
         loadConfigs();
     }
     catch { /* interceptor */ }

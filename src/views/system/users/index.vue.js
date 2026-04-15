@@ -85,7 +85,7 @@ const saveUser = async () => {
                 });
             }
             dialogVisible.value = false;
-            ElMessage.success('保存成功');
+            ElMessage.success('提交成功！您的修改已保存。');
             loadData();
         }
         finally {
@@ -94,14 +94,14 @@ const saveUser = async () => {
     });
 };
 const handleDelete = (row) => {
-    ElMessageBox.confirm(`确定要删除用户 "${row.username}" 吗？`, '警告', {
-        confirmButtonText: '确定',
+    ElMessageBox.confirm(`您确定要彻底删除用户 "${row.username}" 吗？此操作无法撤销。`, '请确认删除', {
+        confirmButtonText: '确认删除',
         cancelButtonText: '取消',
         type: 'warning',
     }).then(async () => {
         try {
             await deleteUser(row.id);
-            ElMessage.success('删除成功');
+            ElMessage.success('删除操作已成功完成。');
             loadData();
         }
         catch (e) {
@@ -426,13 +426,13 @@ const __VLS_86 = {}.ElSelect;
 // @ts-ignore
 const __VLS_87 = __VLS_asFunctionalComponent(__VLS_86, new __VLS_86({
     modelValue: (__VLS_ctx.userForm.role),
-    placeholder: "选择角色",
+    placeholder: "点击选择对应角色...",
     clearable: true,
     ...{ style: {} },
 }));
 const __VLS_88 = __VLS_87({
     modelValue: (__VLS_ctx.userForm.role),
-    placeholder: "选择角色",
+    placeholder: "点击选择对应角色...",
     clearable: true,
     ...{ style: {} },
 }, ...__VLS_functionalComponentArgsRest(__VLS_87));

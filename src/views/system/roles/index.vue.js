@@ -87,7 +87,7 @@ const handleEdit = (row) => {
 };
 const handleDelete = (row) => {
     if (row.systemRole) {
-        ElMessage.warning('系统内置角色不允许删除');
+        ElMessage.warning('抱歉，系统内置角色受到保护，无法进行删除操作。');
         return;
     }
     const warnings = [];
@@ -98,10 +98,10 @@ const handleDelete = (row) => {
     const extra = warnings.length > 0
         ? `\n该角色仍关联 ${warnings.join('、')}，删除后相关关联将被清除。`
         : '';
-    ElMessageBox.confirm(`确定要删除角色「${row.name}」吗？${extra}`, '删除确认', { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消' })
+    ElMessageBox.confirm(`您确定要彻底删除角色「${row.name}」吗？操作不可逆。${extra}`, '请确认删除', { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消' })
         .then(async () => {
         await deleteRole(row.id);
-        ElMessage.success('角色已删除');
+        ElMessage.success('删除操作已成功完成。');
         loadData();
     })
         .catch(() => { });
@@ -136,7 +136,7 @@ const saveRole = async () => {
                 }
                 await updateRole(roleForm.id, payload);
             }
-            ElMessage.success('保存成功');
+            ElMessage.success('提交成功！您的修改已保存。');
             dialogVisible.value = false;
             loadData();
         }
@@ -514,14 +514,14 @@ const __VLS_90 = {}.ElInput;
 // @ts-ignore
 const __VLS_91 = __VLS_asFunctionalComponent(__VLS_90, new __VLS_90({
     modelValue: (__VLS_ctx.roleForm.name),
-    placeholder: "请输入角色名称",
+    placeholder: "请输入角色名称（例如：普通用户）...",
     maxlength: "64",
     showWordLimit: true,
     disabled: (__VLS_ctx.editingSystemRole),
 }));
 const __VLS_92 = __VLS_91({
     modelValue: (__VLS_ctx.roleForm.name),
-    placeholder: "请输入角色名称",
+    placeholder: "请输入角色名称（例如：普通用户）...",
     maxlength: "64",
     showWordLimit: true,
     disabled: (__VLS_ctx.editingSystemRole),

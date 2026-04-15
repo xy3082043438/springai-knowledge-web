@@ -80,15 +80,15 @@ const submitCreate = async () => {
     const title = createForm.value.title.trim();
     const content = createForm.value.content;
     if (!title) {
-        ElMessage.warning('请输入文档标题');
+        ElMessage.warning('文档标题为必填项，请补充完善');
         return;
     }
     if (!content.trim()) {
-        ElMessage.warning('请输入文档内容');
+        ElMessage.warning('文档内容不能为空，请填写要录入的文本');
         return;
     }
     if (createForm.value.allowedRoles.length === 0) {
-        ElMessage.warning('请选择至少一个允许角色');
+        ElMessage.warning('请至少选择一个允许访问该文档的角色');
         return;
     }
     creating.value = true;
@@ -98,7 +98,7 @@ const submitCreate = async () => {
             content,
             allowedRoles: createForm.value.allowedRoles,
         });
-        ElMessage.success('保存成功');
+        ElMessage.success('文档创建成功，系统已开始处理');
         createVisible.value = false;
         resetCreateDialog();
         loadDocuments();
@@ -127,7 +127,7 @@ const handleFileChange = (file) => {
     }
     if (!isSupportedFile(rawFile)) {
         selectedFile.value = null;
-        ElMessage.error(`仅支持 ${supportedFileLabel} 格式`);
+        ElMessage.error(`格式不支持，请上传 ${supportedFileLabel} 类型的文件。`);
         uploadRef.value?.clearFiles();
         return;
     }
@@ -138,21 +138,21 @@ const handleFileRemove = () => {
 };
 const submitUpload = async () => {
     if (!selectedFile.value) {
-        ElMessage.warning('请选择文件');
+        ElMessage.warning('您还未选择文件，请上传后再提交。');
         return;
     }
     if (!isSupportedFile(selectedFile.value)) {
-        ElMessage.warning(`仅支持 ${supportedFileLabel} 格式`);
+        ElMessage.warning(`格式不支持，请上传 ${supportedFileLabel} 类型的文件。`);
         return;
     }
     if (uploadForm.value.allowedRoles.length === 0) {
-        ElMessage.warning('请选择至少一个允许角色');
+        ElMessage.warning('请至少选择一个允许访问该文档的角色。');
         return;
     }
     uploading.value = true;
     try {
         await uploadDocument(selectedFile.value, uploadForm.value.allowedRoles, uploadForm.value.title || undefined);
-        ElMessage.success('上传成功');
+        ElMessage.success('文件上传成功，系统正在解析处理中。');
         uploadVisible.value = false;
         resetUploadDialog();
         loadDocuments();
@@ -175,17 +175,17 @@ const submitEdit = async () => {
             title: editForm.value.title,
             allowedRoles: editForm.value.allowedRoles,
         });
-        ElMessage.success('保存成功');
+        ElMessage.success('提交成功！您的修改已保存。');
         editVisible.value = false;
         loadDocuments();
     }
     catch { /* interceptor */ }
 };
 const handleDelete = (row) => {
-    ElMessageBox.confirm(`确定要删除 "${row.title || row.fileName}" 吗？`, '警告', { type: 'warning' })
+    ElMessageBox.confirm(`您确定要彻底删除文档 "${row.title || row.fileName}" 吗？此操作无法撤销，所有相关记忆和切片也将被清除。`, '请确认删除', { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消' })
         .then(async () => {
         await deleteDocument(row.id);
-        ElMessage.success('删除成功');
+        ElMessage.success('删除操作已成功完成。');
         loadDocuments();
     })
         .catch(() => { });
@@ -193,7 +193,7 @@ const handleDelete = (row) => {
 const handleReindex = async (row) => {
     try {
         const { data } = await reindexOne(row.id);
-        ElMessage.success(`重索引完成：成功 ${data.success}，失败 ${data.failed}`);
+        ElMessage.success(`切片重新构建完成：成功 ${data.success} 条，失败 ${data.failed} 条。`);
         loadDocuments();
     }
     catch { /* interceptor */ }
@@ -201,7 +201,7 @@ const handleReindex = async (row) => {
 const handleReindexAll = async () => {
     try {
         const { data } = await reindexAll();
-        ElMessage.success(`全部重索引：共 ${data.total}，成功 ${data.success}，失败 ${data.failed}`);
+        ElMessage.success(`全局构建任务已完成：共扫描 ${data.total} 篇文档，成功 ${data.success} 篇，失败 ${data.failed} 篇。`);
         loadDocuments();
     }
     catch { /* interceptor */ }
@@ -289,7 +289,7 @@ const __VLS_5 = __VLS_asFunctionalComponent(__VLS_4, new __VLS_4({
     ...{ 'onKeyup': {} },
     ...{ 'onClear': {} },
     modelValue: (__VLS_ctx.searchQuery),
-    placeholder: "搜索文档...",
+    placeholder: "输入关键词快速搜索文档...",
     prefixIcon: "Search",
     ...{ style: {} },
     clearable: true,
@@ -298,7 +298,7 @@ const __VLS_6 = __VLS_5({
     ...{ 'onKeyup': {} },
     ...{ 'onClear': {} },
     modelValue: (__VLS_ctx.searchQuery),
-    placeholder: "搜索文档...",
+    placeholder: "输入关键词快速搜索文档...",
     prefixIcon: "Search",
     ...{ style: {} },
     clearable: true,
@@ -780,13 +780,13 @@ const __VLS_146 = __VLS_asFunctionalComponent(__VLS_145, new __VLS_145({
     modelValue: (__VLS_ctx.createForm.title),
     maxlength: "120",
     showWordLimit: true,
-    placeholder: "请输入文档标题",
+    placeholder: "请输入文档的主题或标题",
 }));
 const __VLS_147 = __VLS_146({
     modelValue: (__VLS_ctx.createForm.title),
     maxlength: "120",
     showWordLimit: true,
-    placeholder: "请输入文档标题",
+    placeholder: "请输入文档的主题或标题",
 }, ...__VLS_functionalComponentArgsRest(__VLS_146));
 var __VLS_144;
 const __VLS_149 = {}.ElFormItem;
@@ -805,13 +805,13 @@ const __VLS_153 = {}.ElSelect;
 const __VLS_154 = __VLS_asFunctionalComponent(__VLS_153, new __VLS_153({
     modelValue: (__VLS_ctx.createForm.allowedRoles),
     multiple: true,
-    placeholder: "请选择角色",
+    placeholder: "请点击选择可见角色...",
     ...{ style: {} },
 }));
 const __VLS_155 = __VLS_154({
     modelValue: (__VLS_ctx.createForm.allowedRoles),
     multiple: true,
-    placeholder: "请选择角色",
+    placeholder: "请点击选择可见角色...",
     ...{ style: {} },
 }, ...__VLS_functionalComponentArgsRest(__VLS_154));
 __VLS_156.slots.default;
@@ -853,7 +853,7 @@ const __VLS_166 = __VLS_asFunctionalComponent(__VLS_165, new __VLS_165({
     rows: (12),
     maxlength: "20000",
     showWordLimit: true,
-    placeholder: "请输入要写入知识库的文本内容",
+    placeholder: "在此输入文本，它将被解析并作为知识库的参考来源...",
 }));
 const __VLS_167 = __VLS_166({
     modelValue: (__VLS_ctx.createForm.content),
@@ -861,7 +861,7 @@ const __VLS_167 = __VLS_166({
     rows: (12),
     maxlength: "20000",
     showWordLimit: true,
-    placeholder: "请输入要写入知识库的文本内容",
+    placeholder: "在此输入文本，它将被解析并作为知识库的参考来源...",
 }, ...__VLS_functionalComponentArgsRest(__VLS_166));
 var __VLS_164;
 var __VLS_140;
@@ -960,11 +960,11 @@ const __VLS_201 = {}.ElInput;
 // @ts-ignore
 const __VLS_202 = __VLS_asFunctionalComponent(__VLS_201, new __VLS_201({
     modelValue: (__VLS_ctx.uploadForm.title),
-    placeholder: "可选，留空使用文件名",
+    placeholder: "文档标题（可选，留空默认使用上传的文件名）",
 }));
 const __VLS_203 = __VLS_202({
     modelValue: (__VLS_ctx.uploadForm.title),
-    placeholder: "可选，留空使用文件名",
+    placeholder: "文档标题（可选，留空默认使用上传的文件名）",
 }, ...__VLS_functionalComponentArgsRest(__VLS_202));
 var __VLS_200;
 const __VLS_205 = {}.ElFormItem;
@@ -983,13 +983,13 @@ const __VLS_209 = {}.ElSelect;
 const __VLS_210 = __VLS_asFunctionalComponent(__VLS_209, new __VLS_209({
     modelValue: (__VLS_ctx.uploadForm.allowedRoles),
     multiple: true,
-    placeholder: "请选择角色",
+    placeholder: "请点击选择可见角色...",
     ...{ style: {} },
 }));
 const __VLS_211 = __VLS_210({
     modelValue: (__VLS_ctx.uploadForm.allowedRoles),
     multiple: true,
-    placeholder: "请选择角色",
+    placeholder: "请点击选择可见角色...",
     ...{ style: {} },
 }, ...__VLS_functionalComponentArgsRest(__VLS_210));
 __VLS_212.slots.default;
@@ -1030,7 +1030,7 @@ const __VLS_222 = __VLS_asFunctionalComponent(__VLS_221, new __VLS_221({
     limit: (1),
     onChange: (__VLS_ctx.handleFileChange),
     onRemove: (__VLS_ctx.handleFileRemove),
-    onExceed: (() => __VLS_ctx.ElMessage.warning('只能上传一个文件')),
+    onExceed: (() => __VLS_ctx.ElMessage.warning('抱歉，每次只能上传一个文件')),
     drag: true,
     ...{ style: {} },
 }));
@@ -1041,7 +1041,7 @@ const __VLS_223 = __VLS_222({
     limit: (1),
     onChange: (__VLS_ctx.handleFileChange),
     onRemove: (__VLS_ctx.handleFileRemove),
-    onExceed: (() => __VLS_ctx.ElMessage.warning('只能上传一个文件')),
+    onExceed: (() => __VLS_ctx.ElMessage.warning('抱歉，每次只能上传一个文件')),
     drag: true,
     ...{ style: {} },
 }, ...__VLS_functionalComponentArgsRest(__VLS_222));

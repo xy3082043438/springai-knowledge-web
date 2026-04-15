@@ -13,11 +13,11 @@ const loginForm = reactive({
 });
 const rules = reactive({
     username: [
-        { required: true, message: '请输入用户名', trigger: 'blur' },
+        { required: true, message: '登录账号不能为空，请填写', trigger: 'blur' },
         { min: 3, max: 64, message: '用户名长度 3-64', trigger: 'blur' },
     ],
     password: [
-        { required: true, message: '请输入密码', trigger: 'blur' },
+        { required: true, message: '登录密码不能为空，请填写', trigger: 'blur' },
         { min: 6, max: 100, message: '密码长度 6-100', trigger: 'blur' },
     ]
 });
@@ -39,7 +39,7 @@ const handleLogin = async () => {
                     username: loginForm.username,
                     password: loginForm.password,
                 });
-                ElMessage.success('登录成功');
+                ElMessage.success('欢迎回来，登录成功！');
                 router.push('/dashboard');
             }
             catch (e) {
@@ -123,12 +123,12 @@ const __VLS_14 = {}.ElInput;
 const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({
     modelValue: (__VLS_ctx.loginForm.username),
     prefixIcon: "User",
-    placeholder: "请输入用户名",
+    placeholder: "请输入您的登录账号",
 }));
 const __VLS_16 = __VLS_15({
     modelValue: (__VLS_ctx.loginForm.username),
     prefixIcon: "User",
-    placeholder: "请输入用户名",
+    placeholder: "请输入您的登录账号",
 }, ...__VLS_functionalComponentArgsRest(__VLS_15));
 var __VLS_13;
 const __VLS_18 = {}.ElFormItem;
@@ -151,7 +151,7 @@ const __VLS_23 = __VLS_asFunctionalComponent(__VLS_22, new __VLS_22({
     modelValue: (__VLS_ctx.loginForm.password),
     prefixIcon: "Lock",
     type: "password",
-    placeholder: "请输入密码",
+    placeholder: "请输入您的登录密码",
     showPassword: true,
 }));
 const __VLS_24 = __VLS_23({
@@ -159,7 +159,7 @@ const __VLS_24 = __VLS_23({
     modelValue: (__VLS_ctx.loginForm.password),
     prefixIcon: "Lock",
     type: "password",
-    placeholder: "请输入密码",
+    placeholder: "请输入您的登录密码",
     showPassword: true,
 }, ...__VLS_functionalComponentArgsRest(__VLS_23));
 let __VLS_26;

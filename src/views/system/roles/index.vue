@@ -66,12 +66,12 @@
         <el-form-item label="角色名称" prop="name">
           <el-input
             v-model="roleForm.name"
-            placeholder="请输入角色名称"
+            placeholder="请输入角色名称（例如：普通用户）..."
             maxlength="64"
             show-word-limit
             :disabled="editingSystemRole"
           />
-          <div v-if="editingSystemRole" class="field-hint">系统内置角色不支持修改名称</div>
+          <div v-if="editingSystemRole" class="field-hint">提示：系统内置角色受到保护，不支持修改名称</div>
         </el-form-item>
 
         <el-form-item label="权限分配">
@@ -228,7 +228,7 @@ const handleEdit = (row: RoleResponse) => {
 
 const handleDelete = (row: RoleResponse) => {
   if (row.systemRole) {
-    ElMessage.warning('系统内置角色不允许删除')
+    ElMessage.warning('抱歉，系统内置角色受到保护，无法进行删除操作。')
     return
   }
 
@@ -241,13 +241,13 @@ const handleDelete = (row: RoleResponse) => {
     : ''
 
   ElMessageBox.confirm(
-    `确定要删除角色「${row.name}」吗？${extra}`,
-    '删除确认',
+    `您确定要彻底删除角色「${row.name}」吗？操作不可逆。${extra}`,
+    '请确认删除',
     { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消' }
   )
     .then(async () => {
       await deleteRole(row.id)
-      ElMessage.success('角色已删除')
+      ElMessage.success('删除操作已成功完成。')
       loadData()
     })
     .catch(() => {})
@@ -280,7 +280,7 @@ const saveRole = async () => {
         }
         await updateRole(roleForm.id, payload)
       }
-      ElMessage.success('保存成功')
+      ElMessage.success('提交成功！您的修改已保存。')
       dialogVisible.value = false
       loadData()
     } finally {

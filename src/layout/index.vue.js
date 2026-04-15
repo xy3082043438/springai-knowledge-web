@@ -74,6 +74,7 @@ let __VLS_directives;
 /** @type {__VLS_StyleScopedClasses['el-sub-menu__title']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-menu-vertical']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-menu--collapse']} */ ;
+/** @type {__VLS_StyleScopedClasses['el-menu-item']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-menu-vertical']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-menu--collapse']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-menu-item']} */ ;

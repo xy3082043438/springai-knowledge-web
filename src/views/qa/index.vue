@@ -66,7 +66,7 @@
               v-model="inputMessage"
               type="textarea"
               :autosize="{ minRows: 1, maxRows: 5 }"
-              placeholder="基于知识库提问，Enter 发送 / Shift+Enter 换行"
+              placeholder="在此输入您的问题，系统将基于知识库为您解答（按 Enter 发送，Shift+Enter 换行）..."
               @keydown.enter.exact.prevent="sendMessage"
               resize="none"
             />
@@ -218,7 +218,7 @@ const handlePreviewChunk = async (chunkId: number) => {
     const { data } = await previewChunk(chunkId)
     currentChunk.value = data
   } catch {
-    ElMessage.error('预览加载失败')
+    ElMessage.error('抱歉，预览内容加载失败，请重试。')
   }
 }
 
@@ -241,7 +241,7 @@ const submitFeedback = async () => {
       comment: feedbackDialog.form.comment || undefined
     })
     feedbackDialog.msg.feedbackGiven = feedbackDialog.helpful
-    ElMessage.success('感谢您的反馈！')
+    ElMessage.success('感谢您的宝贵反馈！我们将持续改进。')
     feedbackDialog.visible = false
   } catch (err: any) {
     // captured in interceptor
