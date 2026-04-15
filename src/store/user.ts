@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { login as loginApi, logout as logoutApi } from '@/api/auth'
-import { getMe } from '@/api/user'
+import { getMe } from '@/api/system/user'
 import type { UserResponse, AuthLoginRequest } from '@/types/api'
 
 export const useUserStore = defineStore('user', () => {
@@ -67,3 +67,4 @@ export const useUserStore = defineStore('user', () => {
     ensureUserInfo,
   }
 })
+

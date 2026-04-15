@@ -18,6 +18,10 @@ export function updateUser(id: number, data: UserUpdateRequest) {
     return request.patch<UserResponse>(`/api/users/${id}`, data)
 }
 
+export function deleteUser(id: number) {
+    return request.delete(`/api/users/${id}`)
+}
+
 export function getMe() {
     return request.get<UserResponse>('/api/users/me')
 }
