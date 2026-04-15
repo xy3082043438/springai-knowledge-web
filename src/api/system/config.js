@@ -11,9 +11,6 @@ export function upsertConfig(key, data) {
 export function refreshConfig() {
     return request.post('/api/config/refresh');
 }
-export function getBoundary() {
-    return request.get('/api/system/boundary');
-}
 export function getSystemStatus() {
     return request.get('/api/system/status');
 }

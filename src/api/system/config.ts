@@ -2,7 +2,6 @@ import request from '@/utils/request'
 import type {
     SystemConfigRequest,
     SystemConfigResponse,
-    SystemBoundaryResponse,
     SystemStatusResponse,
 } from '@/types/api'
 
@@ -20,10 +19,6 @@ export function upsertConfig(key: string, data: SystemConfigRequest) {
 
 export function refreshConfig() {
     return request.post('/api/config/refresh')
-}
-
-export function getBoundary() {
-    return request.get<SystemBoundaryResponse>('/api/system/boundary')
 }
 
 export function getSystemStatus() {

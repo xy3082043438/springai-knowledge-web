@@ -48,6 +48,11 @@ export interface RoleResponse {
     id: number
     name: string
     permissions: Permission[]
+    createdAt: string
+    updatedAt: string
+    userCount: number
+    documentCount: number
+    systemRole: boolean
 }
 
 export interface RoleCreateRequest {
@@ -58,6 +63,14 @@ export interface RoleCreateRequest {
 export interface RoleUpdateRequest {
     name?: string
     permissions?: Permission[]
+}
+
+export interface PermissionOptionResponse {
+    code: string
+    category: string
+    categoryLabel: string
+    label: string
+    description: string
 }
 
 /* ============  Document  ============ */
@@ -213,12 +226,44 @@ export interface SystemConfigResponse {
     updatedAt: string
 }
 
-export interface SystemBoundaryResponse {
-    boundary: string
-}
-
 export interface SystemStatusResponse {
     status: string
     healthy: boolean
     message: string
+}
+
+/* ============  Dashboard  ============ */
+export interface DashboardOverviewResponse {
+    totalUsers: number
+    totalRoles: number
+    totalDocuments: number
+    totalQaCount: number
+    todayQaCount: number
+}
+
+export interface DashboardTrendPointResponse {
+    date: string
+    count: number
+}
+
+export interface DashboardWordCloudItemResponse {
+    text: string
+    value: number
+}
+
+export interface DashboardDistributionItemResponse {
+    type: string
+    label: string
+    value: number
+}
+
+export interface DashboardResponse {
+    generatedAt: string
+    trendDays: number
+    keywordDays: number
+    keywordLimit: number
+    overview: DashboardOverviewResponse
+    dailyQaTrend: DashboardTrendPointResponse[]
+    hotQuestionKeywords: DashboardWordCloudItemResponse[]
+    documentTypeDistribution: DashboardDistributionItemResponse[]
 }
