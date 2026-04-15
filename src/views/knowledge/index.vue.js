@@ -2,8 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { UploadFilled } from '@element-plus/icons-vue';
-import { listDocuments, searchDocuments, createDocument, uploadDocument, updateDocument, deleteDocument, reindexAll, reindexOne, } from '@/api/document';
-import { listRoles } from '@/api/role';
+import { listDocuments, searchDocuments, createDocument, uploadDocument, updateDocument, deleteDocument, reindexAll, reindexOne, } from '@/api/business/document';
+import { listRoles } from '@/api/system/role';
 import { useUserStore } from '@/store/user';
 import { isAdminRole } from '@/utils/access';
 const supportedFileExtensions = ['pdf', 'docx', 'pptx', 'xlsx', 'txt', 'md', 'markdown', 'html', 'htm', 'csv'];

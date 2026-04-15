@@ -163,8 +163,8 @@ import {
   deleteDocument,
   reindexAll,
   reindexOne,
-} from '@/api/document'
-import { listRoles } from '@/api/role'
+} from '@/api/business/document'
+import { listRoles } from '@/api/system/role'
 import { useUserStore } from '@/store/user'
 import { isAdminRole } from '@/utils/access'
 import type { DocumentSummaryResponse, RoleResponse } from '@/types/api'
@@ -463,3 +463,4 @@ const formatSize = (bytes: number | null) => {
   margin-top: 4px;
 }
 </style>
+

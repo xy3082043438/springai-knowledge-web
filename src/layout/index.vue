@@ -14,13 +14,24 @@
           <img src="/logo.svg" class="logo-badge" alt="logo" />
           <div v-if="!isCollapse" class="logo-text">
             <div class="logo-title">企业知识库</div>
-            <div class="logo-subtitle">智能问答助手</div>
+            <div class="logo-subtitle">基于 SpringAI 架构</div>
           </div>
         </div>
-        <el-menu-item v-for="item in visibleMenuItems" :key="item.path" :index="item.path">
+        <el-menu-item v-for="item in topLevelMenu" :key="item.path" :index="item.path">
           <el-icon><component :is="item.icon" /></el-icon>
           <template #title>{{ item.title }}</template>
         </el-menu-item>
+
+        <el-sub-menu v-if="systemMenu.length > 0" index="/system-group">
+          <template #title>
+            <el-icon><Setting /></el-icon>
+            <span>系统管理</span>
+          </template>
+          <el-menu-item v-for="item in systemMenu" :key="item.path" :index="item.path">
+            <el-icon><component :is="item.icon" /></el-icon>
+            <template #title>{{ item.title }}</template>
+          </el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </el-aside>
 
@@ -33,7 +44,7 @@
           </el-icon>
           <div class="header-title">
             <div class="title-main">企业知识库智能问答助手</div>
-            <div class="title-sub">统一知识沉淀与检索，提升协作效率</div>
+            <div class="title-sub">基于 SpringAI 与 RAG 架构的企业级应用</div>
           </div>
           <div class="right-menu">
             <el-dropdown>
@@ -71,6 +82,7 @@ import {
   ChatDotRound,
   Document,
   User,
+  Lock,
   List,
   Setting,
   Expand,
@@ -96,15 +108,24 @@ const menuItems: MenuItem[] = [
   { path: '/dashboard', title: '仪表盘', icon: Odometer },
   { path: '/qa', title: '智能问答', icon: ChatDotRound },
   { path: '/knowledge', title: '知识库管理', icon: Document },
+]
+
+const systemMenuItems: MenuItem[] = [
   { path: '/users', title: '用户管理', icon: User, roles: [ADMIN_ROLE] },
-  { path: '/logs', title: '日志与反馈', icon: List, roles: [ADMIN_ROLE] },
+  { path: '/roles', title: '角色管理', icon: Lock, roles: [ADMIN_ROLE] },
   { path: '/system', title: '系统配置', icon: Setting, roles: [ADMIN_ROLE] },
+  { path: '/logs', title: '日志与反馈', icon: List, roles: [ADMIN_ROLE] },
 ]
 
 const activeMenu = computed(() => route.path)
 const displayName = computed(() => userStore.userInfo?.username || '用户')
-const visibleMenuItems = computed(() =>
+
+const topLevelMenu = computed(() =>
   menuItems.filter((item) => hasAnyRole(userStore.userInfo?.role, item.roles))
+)
+
+const systemMenu = computed(() =>
+  systemMenuItems.filter((item) => hasAnyRole(userStore.userInfo?.role, item.roles))
 )
 
 const toggleCollapse = () => {
@@ -229,7 +250,8 @@ onMounted(async () => {
   padding: 20px;
 }
 
-:deep(.el-menu-vertical .el-menu-item) {
+:deep(.el-menu-vertical .el-menu-item),
+:deep(.el-menu-vertical .el-sub-menu__title) {
   margin: 3px 10px;
   border-radius: 10px;
   height: 46px;
@@ -239,7 +261,12 @@ onMounted(async () => {
   transition: all 0.2s;
 }
 
-:deep(.el-menu-vertical .el-menu-item .el-icon) {
+:deep(.el-menu-vertical .el-sub-menu .el-menu-item) {
+  padding-left: 48px !important;
+}
+
+:deep(.el-menu-vertical .el-menu-item .el-icon),
+:deep(.el-menu-vertical .el-sub-menu__title .el-icon) {
   font-size: 17px;
   vertical-align: middle;
 }
@@ -249,7 +276,8 @@ onMounted(async () => {
   width: 100%;
 }
 
-:deep(.el-menu-vertical.el-menu--collapse .el-menu-item) {
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item),
+:deep(.el-menu-vertical.el-menu--collapse .el-sub-menu__title) {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -261,7 +289,8 @@ onMounted(async () => {
   border-radius: 12px;
 }
 
-:deep(.el-menu-vertical.el-menu--collapse .el-menu-item > *) {
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item > *),
+:deep(.el-menu-vertical.el-menu--collapse .el-sub-menu__title > *) {
   margin: 0 !important;
 }
 
@@ -274,7 +303,8 @@ onMounted(async () => {
   padding: 0 !important;
 }
 
-:deep(.el-menu-vertical.el-menu--collapse .el-menu-item .el-icon) {
+:deep(.el-menu-vertical.el-menu--collapse .el-menu-item .el-icon),
+:deep(.el-menu-vertical.el-menu--collapse .el-sub-menu__title .el-icon) {
   margin: 0 !important;
   font-size: 20px;
 }
@@ -294,7 +324,8 @@ onMounted(async () => {
   color: #5ab4ff;
 }
 
-:deep(.el-menu-vertical .el-menu-item:hover:not(.is-active)) {
+:deep(.el-menu-vertical .el-menu-item:hover:not(.is-active)),
+:deep(.el-menu-vertical .el-sub-menu__title:hover) {
   background: rgba(255, 255, 255, 0.07);
   color: #e0eaf5;
 }

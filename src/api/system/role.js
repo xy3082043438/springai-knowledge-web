@@ -11,4 +11,10 @@ export function createRole(data) {
 export function updateRole(id, data) {
     return request.patch(`/api/roles/${id}`, data);
 }
+export function deleteRole(id) {
+    return request.delete(`/api/roles/${id}`);
+}
+export function getPermissions() {
+    return request.get('/api/roles/permissions');
+}
 //# sourceMappingURL=role.js.map

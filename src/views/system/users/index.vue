@@ -5,13 +5,16 @@
         <div class="page-title">用户管理</div>
         <div class="page-subtitle">管理系统账号与角色权限</div>
       </div>
-      <el-button type="primary" icon="Plus" @click="handleAdd">添加用户</el-button>
+      <div class="page-actions">
+        <el-button @click="router.push('/roles')">角色管理</el-button>
+        <el-button type="primary" icon="Plus" @click="handleAdd">添加用户</el-button>
+      </div>
     </div>
 
     <el-table :data="users" v-loading="loading" style="width: 100%;" stripe border>
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="username" label="用户名" width="180" />
-      <el-table-column prop="role" label="角色" width="150">
+      <el-table-column prop="username" label="用户名" min-width="180" />
+      <el-table-column prop="role" label="角色" min-width="150">
         <template #default="{ row }">
           <el-tag :type="row.role?.toUpperCase() === 'ADMIN' ? 'danger' : 'info'" size="small">{{ row.role || '-' }}</el-tag>
         </template>
@@ -22,9 +25,10 @@
       <el-table-column prop="updatedAt" label="更新时间" width="200">
         <template #default="{ row }">{{ formatDate(row.updatedAt) }}</template>
       </el-table-column>
-      <el-table-column label="操作" width="150" fixed="right">
+      <el-table-column label="操作" width="150" align="center">
         <template #default="{ row }">
           <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+          <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -54,10 +58,11 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
-import { listUsers, createUser, updateUser } from '@/api/user'
-import { listRoles } from '@/api/role'
+import { listUsers, createUser, updateUser, deleteUser } from '@/api/system/user'
+import { listRoles } from '@/api/system/role'
 import type { UserResponse, RoleResponse } from '@/types/api'
 
 const loading = ref(false)
@@ -65,6 +70,7 @@ const saving = ref(false)
 const dialogVisible = ref(false)
 const dialogType = ref<'add' | 'edit'>('add')
 const formRef = ref<FormInstance>()
+const router = useRouter()
 
 const users = ref<UserResponse[]>([])
 const roles = ref<RoleResponse[]>([])
@@ -155,6 +161,22 @@ const saveUser = async () => {
     }
   })
 }
+
+const handleDelete = (row: UserResponse) => {
+  ElMessageBox.confirm(`确定要删除用户 "${row.username}" 吗？`, '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    try {
+      await deleteUser(row.id)
+      ElMessage.success('删除成功')
+      loadData()
+    } catch (e: any) {
+      // 错误由拦截器统一处理
+    }
+  }).catch(() => {})
+}
 </script>
 
 <style scoped>
@@ -172,6 +194,11 @@ const saveUser = async () => {
   margin-bottom: 16px;
 }
 
+.page-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .page-title {
   font-size: 18px;
   font-weight: 700;
@@ -183,3 +210,4 @@ const saveUser = async () => {
   margin-top: 4px;
 }
 </style>
+

@@ -1,7 +1,7 @@
-/// <reference types="../../../node_modules/.vue-global-types/vue_3.5_0_0_0.d.ts" />
+/// <reference types="../../../../node_modules/.vue-global-types/vue_3.5_0_0_0.d.ts" />
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { listConfigs, upsertConfig, refreshConfig } from '@/api/config';
+import { listConfigs, upsertConfig, refreshConfig } from '@/api/system/config';
 const loading = ref(false);
 const configs = ref([]);
 const editingKey = ref(null);

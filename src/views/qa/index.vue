@@ -103,15 +103,33 @@
         </div>
       </el-card>
     </div>
+
+    <!-- 反馈评论对话框 -->
+    <el-dialog v-model="feedbackDialog.visible" :title="feedbackDialog.helpful ? '顶（有用）' : '踩（无用）'" width="400px">
+      <el-form :model="feedbackDialog.form" label-position="top">
+        <el-form-item label="详细建议 (可选)">
+          <el-input
+            v-model="feedbackDialog.form.comment"
+            type="textarea"
+            :rows="4"
+            placeholder="请输入您遇到的问题或者想要改进的地方..."
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="feedbackDialog.visible = false">取消</el-button>
+        <el-button type="primary" :loading="feedbackDialog.saving" @click="submitFeedback">提交</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import { ask } from '@/api/qa'
-import { createFeedback } from '@/api/feedback'
-import { previewChunk } from '@/api/document'
+import { ask, askStream } from '@/api/business/qa'
+import { createFeedback } from '@/api/business/feedback'
+import { previewChunk } from '@/api/business/document'
 import type { QaSourceResponse, DocumentChunkPreviewResponse } from '@/types/api'
 
 interface Message {
@@ -134,6 +152,16 @@ const loading = ref(false)
 const chatHistoryRef = ref<HTMLElement | null>(null)
 const currentChunk = ref<DocumentChunkPreviewResponse | null>(null)
 
+const feedbackDialog = reactive({
+  visible: false,
+  saving: false,
+  helpful: true,
+  msg: null as Message | null,
+  form: {
+    comment: ''
+  }
+})
+
 const scrollToBottom = async () => {
   await nextTick()
   if (chatHistoryRef.value) {
@@ -150,23 +178,39 @@ const sendMessage = async () => {
   loading.value = true
   scrollToBottom()
 
-  try {
-    const { data } = await ask({ question })
-    messages.value.push({
-      role: 'assistant',
-      content: data.answer,
-      sources: data.sources,
-      qaLogId: data.qaLogId,
-    })
-  } catch {
-    messages.value.push({
-      role: 'assistant',
-      content: '抱歉，请求失败，请稍后重试。',
-    })
-  } finally {
-    loading.value = false
-    scrollToBottom()
-  }
+  let assistantMsgIndex = -1
+
+  await askStream(
+    { question },
+    (chunk) => {
+      // 收到第一字时隐藏"思考中"加载态并建空消息框
+      if (loading.value) {
+        loading.value = false
+        assistantMsgIndex = messages.value.length
+        messages.value.push({ role: 'assistant', content: '' })
+      }
+
+      const targetMsg = messages.value[assistantMsgIndex]
+      if (chunk.answer) targetMsg.content += chunk.answer
+      if (chunk.qaLogId) targetMsg.qaLogId = chunk.qaLogId
+      if (chunk.sources) targetMsg.sources = chunk.sources
+      scrollToBottom()
+    },
+    () => {
+      loading.value = false
+      scrollToBottom()
+    },
+    (err) => {
+      if (loading.value) {
+        // 如果出错还没流出任何文字
+        loading.value = false
+        messages.value.push({ role: 'assistant', content: '抱歉，网络或服务响应异常，请稍后重试。' })
+      } else if (assistantMsgIndex >= 0) {
+        messages.value[assistantMsgIndex].content += '\n\n*(网络连接已中断)*'
+      }
+      scrollToBottom()
+    }
+  )
 }
 
 const handlePreviewChunk = async (chunkId: number) => {
@@ -178,14 +222,31 @@ const handlePreviewChunk = async (chunkId: number) => {
   }
 }
 
-const handleFeedback = async (msg: Message, helpful: boolean) => {
+const handleFeedback = (msg: Message, helpful: boolean) => {
   if (!msg.qaLogId) return
+  feedbackDialog.msg = msg
+  feedbackDialog.helpful = helpful
+  feedbackDialog.form.comment = ''
+  feedbackDialog.visible = true
+}
+
+const submitFeedback = async () => {
+  if (!feedbackDialog.msg || !feedbackDialog.msg.qaLogId) return
+  
+  feedbackDialog.saving = true
   try {
-    await createFeedback({ qaLogId: msg.qaLogId, helpful })
-    msg.feedbackGiven = helpful
-    ElMessage.success('感谢反馈！')
-  } catch {
-    // handled by interceptor
+    await createFeedback({
+      qaLogId: feedbackDialog.msg.qaLogId,
+      helpful: feedbackDialog.helpful,
+      comment: feedbackDialog.form.comment || undefined
+    })
+    feedbackDialog.msg.feedbackGiven = feedbackDialog.helpful
+    ElMessage.success('感谢您的反馈！')
+    feedbackDialog.visible = false
+  } catch (err: any) {
+    // captured in interceptor
+  } finally {
+    feedbackDialog.saving = false
   }
 }
 
@@ -319,3 +380,4 @@ const formatMessage = (content: string) => {
 
 .feedback-actions { margin-top: 8px; display: flex; gap: 6px; }
 </style>
+

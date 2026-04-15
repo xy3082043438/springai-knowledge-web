@@ -3,7 +3,7 @@
     <div class="page-header">
       <div>
         <div class="page-title">系统配置</div>
-        <div class="page-subtitle">统一管理系统参数与运行边界</div>
+        <div class="page-subtitle">统一管理系统参数与运行状态</div>
       </div>
       <el-button type="primary" icon="Refresh" @click="handleRefresh">刷新全局配置</el-button>
     </div>
@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { listConfigs, upsertConfig, refreshConfig } from '@/api/config'
+import { listConfigs, upsertConfig, refreshConfig } from '@/api/system/config'
 import type { SystemConfigResponse } from '@/types/api'
 
 const loading = ref(false)
@@ -141,3 +141,4 @@ const handleRefresh = async () => {
   margin-top: 4px;
 }
 </style>
+

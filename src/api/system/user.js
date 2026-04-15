@@ -8,6 +8,9 @@ export function createUser(data) {
 export function updateUser(id, data) {
     return request.patch(`/api/users/${id}`, data);
 }
+export function deleteUser(id) {
+    return request.delete(`/api/users/${id}`);
+}
 export function getMe() {
     return request.get('/api/users/me');
 }

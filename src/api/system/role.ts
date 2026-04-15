@@ -3,6 +3,7 @@ import type {
     RoleResponse,
     RoleCreateRequest,
     RoleUpdateRequest,
+    PermissionOptionResponse,
 } from '@/types/api'
 
 export function listRoles() {
@@ -19,4 +20,12 @@ export function createRole(data: RoleCreateRequest) {
 
 export function updateRole(id: number, data: RoleUpdateRequest) {
     return request.patch<RoleResponse>(`/api/roles/${id}`, data)
+}
+
+export function deleteRole(id: number) {
+    return request.delete(`/api/roles/${id}`)
+}
+
+export function getPermissions() {
+    return request.get<PermissionOptionResponse[]>('/api/roles/permissions')
 }

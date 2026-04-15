@@ -1,9 +1,9 @@
 /// <reference types="../../../node_modules/.vue-global-types/vue_3.5_0_0_0.d.ts" />
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
-import { ask } from '@/api/qa';
-import { createFeedback } from '@/api/feedback';
-import { previewChunk } from '@/api/document';
+import { askStream } from '@/api/business/qa';
+import { createFeedback } from '@/api/business/feedback';
+import { previewChunk } from '@/api/business/document';
 const messages = ref([
     {
         role: 'assistant',
@@ -14,6 +14,15 @@ const inputMessage = ref('');
 const loading = ref(false);
 const chatHistoryRef = ref(null);
 const currentChunk = ref(null);
+const feedbackDialog = reactive({
+    visible: false,
+    saving: false,
+    helpful: true,
+    msg: null,
+    form: {
+        comment: ''
+    }
+});
 const scrollToBottom = async () => {
     await nextTick();
     if (chatHistoryRef.value) {
@@ -28,25 +37,36 @@ const sendMessage = async () => {
     inputMessage.value = '';
     loading.value = true;
     scrollToBottom();
-    try {
-        const { data } = await ask({ question });
-        messages.value.push({
-            role: 'assistant',
-            content: data.answer,
-            sources: data.sources,
-            qaLogId: data.qaLogId,
-        });
-    }
-    catch {
-        messages.value.push({
-            role: 'assistant',
-            content: '抱歉，请求失败，请稍后重试。',
-        });
-    }
-    finally {
+    let assistantMsgIndex = -1;
+    await askStream({ question }, (chunk) => {
+        // 收到第一字时隐藏"思考中"加载态并建空消息框
+        if (loading.value) {
+            loading.value = false;
+            assistantMsgIndex = messages.value.length;
+            messages.value.push({ role: 'assistant', content: '' });
+        }
+        const targetMsg = messages.value[assistantMsgIndex];
+        if (chunk.answer)
+            targetMsg.content += chunk.answer;
+        if (chunk.qaLogId)
+            targetMsg.qaLogId = chunk.qaLogId;
+        if (chunk.sources)
+            targetMsg.sources = chunk.sources;
+        scrollToBottom();
+    }, () => {
         loading.value = false;
         scrollToBottom();
-    }
+    }, (err) => {
+        if (loading.value) {
+            // 如果出错还没流出任何文字
+            loading.value = false;
+            messages.value.push({ role: 'assistant', content: '抱歉，网络或服务响应异常，请稍后重试。' });
+        }
+        else if (assistantMsgIndex >= 0) {
+            messages.value[assistantMsgIndex].content += '\n\n*(网络连接已中断)*';
+        }
+        scrollToBottom();
+    });
 };
 const handlePreviewChunk = async (chunkId) => {
     try {
@@ -57,16 +77,33 @@ const handlePreviewChunk = async (chunkId) => {
         ElMessage.error('预览加载失败');
     }
 };
-const handleFeedback = async (msg, helpful) => {
+const handleFeedback = (msg, helpful) => {
     if (!msg.qaLogId)
         return;
+    feedbackDialog.msg = msg;
+    feedbackDialog.helpful = helpful;
+    feedbackDialog.form.comment = '';
+    feedbackDialog.visible = true;
+};
+const submitFeedback = async () => {
+    if (!feedbackDialog.msg || !feedbackDialog.msg.qaLogId)
+        return;
+    feedbackDialog.saving = true;
     try {
-        await createFeedback({ qaLogId: msg.qaLogId, helpful });
-        msg.feedbackGiven = helpful;
-        ElMessage.success('感谢反馈！');
+        await createFeedback({
+            qaLogId: feedbackDialog.msg.qaLogId,
+            helpful: feedbackDialog.helpful,
+            comment: feedbackDialog.form.comment || undefined
+        });
+        feedbackDialog.msg.feedbackGiven = feedbackDialog.helpful;
+        ElMessage.success('感谢您的反馈！');
+        feedbackDialog.visible = false;
     }
-    catch {
-        // handled by interceptor
+    catch (err) {
+        // captured in interceptor
+    }
+    finally {
+        feedbackDialog.saving = false;
     }
 };
 const formatMessage = (content) => {
@@ -470,6 +507,103 @@ if (__VLS_ctx.currentChunk) {
     var __VLS_71;
     var __VLS_55;
 }
+const __VLS_88 = {}.ElDialog;
+/** @type {[typeof __VLS_components.ElDialog, typeof __VLS_components.elDialog, typeof __VLS_components.ElDialog, typeof __VLS_components.elDialog, ]} */ ;
+// @ts-ignore
+const __VLS_89 = __VLS_asFunctionalComponent(__VLS_88, new __VLS_88({
+    modelValue: (__VLS_ctx.feedbackDialog.visible),
+    title: (__VLS_ctx.feedbackDialog.helpful ? '顶（有用）' : '踩（无用）'),
+    width: "400px",
+}));
+const __VLS_90 = __VLS_89({
+    modelValue: (__VLS_ctx.feedbackDialog.visible),
+    title: (__VLS_ctx.feedbackDialog.helpful ? '顶（有用）' : '踩（无用）'),
+    width: "400px",
+}, ...__VLS_functionalComponentArgsRest(__VLS_89));
+__VLS_91.slots.default;
+const __VLS_92 = {}.ElForm;
+/** @type {[typeof __VLS_components.ElForm, typeof __VLS_components.elForm, typeof __VLS_components.ElForm, typeof __VLS_components.elForm, ]} */ ;
+// @ts-ignore
+const __VLS_93 = __VLS_asFunctionalComponent(__VLS_92, new __VLS_92({
+    model: (__VLS_ctx.feedbackDialog.form),
+    labelPosition: "top",
+}));
+const __VLS_94 = __VLS_93({
+    model: (__VLS_ctx.feedbackDialog.form),
+    labelPosition: "top",
+}, ...__VLS_functionalComponentArgsRest(__VLS_93));
+__VLS_95.slots.default;
+const __VLS_96 = {}.ElFormItem;
+/** @type {[typeof __VLS_components.ElFormItem, typeof __VLS_components.elFormItem, typeof __VLS_components.ElFormItem, typeof __VLS_components.elFormItem, ]} */ ;
+// @ts-ignore
+const __VLS_97 = __VLS_asFunctionalComponent(__VLS_96, new __VLS_96({
+    label: "详细建议 (可选)",
+}));
+const __VLS_98 = __VLS_97({
+    label: "详细建议 (可选)",
+}, ...__VLS_functionalComponentArgsRest(__VLS_97));
+__VLS_99.slots.default;
+const __VLS_100 = {}.ElInput;
+/** @type {[typeof __VLS_components.ElInput, typeof __VLS_components.elInput, ]} */ ;
+// @ts-ignore
+const __VLS_101 = __VLS_asFunctionalComponent(__VLS_100, new __VLS_100({
+    modelValue: (__VLS_ctx.feedbackDialog.form.comment),
+    type: "textarea",
+    rows: (4),
+    placeholder: "请输入您遇到的问题或者想要改进的地方...",
+}));
+const __VLS_102 = __VLS_101({
+    modelValue: (__VLS_ctx.feedbackDialog.form.comment),
+    type: "textarea",
+    rows: (4),
+    placeholder: "请输入您遇到的问题或者想要改进的地方...",
+}, ...__VLS_functionalComponentArgsRest(__VLS_101));
+var __VLS_99;
+var __VLS_95;
+{
+    const { footer: __VLS_thisSlot } = __VLS_91.slots;
+    const __VLS_104 = {}.ElButton;
+    /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+    // @ts-ignore
+    const __VLS_105 = __VLS_asFunctionalComponent(__VLS_104, new __VLS_104({
+        ...{ 'onClick': {} },
+    }));
+    const __VLS_106 = __VLS_105({
+        ...{ 'onClick': {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_105));
+    let __VLS_108;
+    let __VLS_109;
+    let __VLS_110;
+    const __VLS_111 = {
+        onClick: (...[$event]) => {
+            __VLS_ctx.feedbackDialog.visible = false;
+        }
+    };
+    __VLS_107.slots.default;
+    var __VLS_107;
+    const __VLS_112 = {}.ElButton;
+    /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+    // @ts-ignore
+    const __VLS_113 = __VLS_asFunctionalComponent(__VLS_112, new __VLS_112({
+        ...{ 'onClick': {} },
+        type: "primary",
+        loading: (__VLS_ctx.feedbackDialog.saving),
+    }));
+    const __VLS_114 = __VLS_113({
+        ...{ 'onClick': {} },
+        type: "primary",
+        loading: (__VLS_ctx.feedbackDialog.saving),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_113));
+    let __VLS_116;
+    let __VLS_117;
+    let __VLS_118;
+    const __VLS_119 = {
+        onClick: (__VLS_ctx.submitFeedback)
+    };
+    __VLS_115.slots.default;
+    var __VLS_115;
+}
+var __VLS_91;
 /** @type {__VLS_StyleScopedClasses['qa-container']} */ ;
 /** @type {__VLS_StyleScopedClasses['chat-panel']} */ ;
 /** @type {__VLS_StyleScopedClasses['chat-header']} */ ;
@@ -508,9 +642,11 @@ const __VLS_self = (await import('vue')).defineComponent({
             loading: loading,
             chatHistoryRef: chatHistoryRef,
             currentChunk: currentChunk,
+            feedbackDialog: feedbackDialog,
             sendMessage: sendMessage,
             handlePreviewChunk: handlePreviewChunk,
             handleFeedback: handleFeedback,
+            submitFeedback: submitFeedback,
             formatMessage: formatMessage,
         };
     },

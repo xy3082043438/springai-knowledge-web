@@ -3,8 +3,8 @@
     <el-card class="login-card">
       <div class="card-header">
         <img src="/logo.svg" class="brand-logo" alt="logo" />
-        <h2 class="login-title">企业知识库智能问答助手</h2>
-        <p class="login-subtitle">让组织知识可检索、可复用、可沉淀</p>
+        <h2 class="login-title">基于SpringAI的企业知识库系统</h2>
+        <p class="login-subtitle">一款企业级智能知识检索与增强归纳平台</p>
       </div>
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef" label-position="top">
         <el-form-item label="用户名" prop="username">

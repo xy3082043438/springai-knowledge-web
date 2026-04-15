@@ -39,19 +39,25 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'users',
         name: 'UserManagement',
-        component: () => import('../views/users/index.vue'),
+        component: () => import('../views/system/users/index.vue'),
         meta: { title: '用户管理', icon: 'User', roles: adminOnlyRoles }
+      },
+      {
+        path: 'roles',
+        name: 'RoleManagement',
+        component: () => import('../views/system/roles/index.vue'),
+        meta: { title: '角色管理', icon: 'Lock', roles: adminOnlyRoles }
       },
       {
         path: 'logs',
         name: 'Logs',
-        component: () => import('../views/logs/index.vue'),
+        component: () => import('../views/system/logs/index.vue'),
         meta: { title: '日志与反馈', icon: 'List', roles: adminOnlyRoles }
       },
       {
         path: 'system',
         name: 'SystemConfig',
-        component: () => import('../views/system/index.vue'),
+        component: () => import('../views/system/config/index.vue'),
         meta: { title: '系统配置', icon: 'Setting', roles: adminOnlyRoles }
       },
       {
