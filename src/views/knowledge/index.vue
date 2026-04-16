@@ -43,7 +43,15 @@
       </el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">{{ getStatusLabel(row.status) }}</el-tag>
+          <el-tooltip
+            v-if="row.status === 'FAILED' && row.errorMessage"
+            :content="row.errorMessage"
+            placement="top"
+            effect="dark"
+          >
+            <el-tag :type="getStatusType(row.status)" style="cursor: help;">{{ getStatusLabel(row.status) }}</el-tag>
+          </el-tooltip>
+          <el-tag v-else :type="getStatusType(row.status)">{{ getStatusLabel(row.status) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="允许角色" width="160">
@@ -459,10 +467,10 @@ const getContentTypeLabel = (row: DocumentSummaryResponse) => {
   return extension ? extension.toUpperCase() : '-'
 }
 
-const getStatusType = (status: string) => {
   switch (status) {
     case 'READY': return 'success'
-    case 'UPLOADED': return 'warning'
+    case 'UPLOADED': return 'info'
+    case 'PARSING': return 'warning'
     case 'FAILED': return 'danger'
     default: return 'info'
   }
@@ -471,7 +479,8 @@ const getStatusType = (status: string) => {
 const getStatusLabel = (status: string) => {
   switch (status) {
     case 'READY': return '已索引'
-    case 'UPLOADED': return '已上传'
+    case 'UPLOADED': return '待解析'
+    case 'PARSING': return '解析中'
     case 'FAILED': return '失败'
     default: return status
   }

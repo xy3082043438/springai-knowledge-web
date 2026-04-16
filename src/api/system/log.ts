@@ -24,3 +24,27 @@ export function searchOperationLogs(params?: {
 }) {
     return request.get<PageResponse<OperationLogResponse>>('/api/logs/operations', { params })
 }
+
+export function exportQaLogs(params?: {
+    userId?: number
+    from?: string
+    to?: string
+}) {
+    return request.get('/api/logs/qa/export', { 
+        params,
+        responseType: 'blob' 
+    })
+}
+
+
+
+export function exportOperationLogs(params?: {
+    userId?: number
+    from?: string
+    to?: string
+}) {
+    return request.get('/api/logs/operations/export', { 
+        params,
+        responseType: 'blob' 
+    })
+}

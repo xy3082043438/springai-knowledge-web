@@ -29,3 +29,7 @@ export function getMe() {
 export function updateMe(data: MeUpdateRequest) {
     return request.patch<UserResponse>('/api/users/me', data)
 }
+
+export function updatePassword(data: import('@/types/api').PasswordUpdateRequest) {
+    return request.patch<void>('/api/users/me/password', data)
+}

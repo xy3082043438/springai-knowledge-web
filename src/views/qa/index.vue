@@ -200,13 +200,21 @@ const sendMessage = async () => {
       loading.value = false
       scrollToBottom()
     },
-    (err) => {
-      if (loading.value) {
-        // 如果出错还没流出任何文字
-        loading.value = false
-        messages.value.push({ role: 'assistant', content: '抱歉，网络或服务响应异常，请稍后重试。' })
-      } else if (assistantMsgIndex >= 0) {
-        messages.value[assistantMsgIndex].content += '\n\n*(网络连接已中断)*'
+    (err: any) => {
+      loading.value = false
+      const errorMsg = err?.message || ''
+      let displayMsg = '抱歉，网络或服务响应异常，请稍后重试。'
+      
+      if (errorMsg.includes('504') || errorMsg.includes('timeout')) {
+        displayMsg = '大模型服务响应超时（504），由于当前并发请求较多，请过几秒后再试。'
+      } else if (errorMsg.includes('401')) {
+        displayMsg = '您的登录状态已过期，请重新登录。'
+      }
+
+      if (assistantMsgIndex >= 0) {
+        messages.value[assistantMsgIndex].content += `\n\n*(错误: ${displayMsg})*`
+      } else {
+        messages.value.push({ role: 'assistant', content: displayMsg })
       }
       scrollToBottom()
     }

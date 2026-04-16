@@ -6,7 +6,6 @@
         <div class="page-subtitle">管理系统账号与角色权限</div>
       </div>
       <div class="page-actions">
-        <el-button @click="router.push('/roles')">角色管理</el-button>
         <el-button type="primary" icon="Plus" @click="handleAdd">添加用户</el-button>
       </div>
     </div>
@@ -16,6 +15,14 @@
       <el-table-column prop="role" label="角色" min-width="150">
         <template #default="{ row }">
           <el-tag :type="row.role?.toUpperCase() === 'ADMIN' ? 'danger' : 'info'" size="small">{{ row.role || '-' }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="enabled" label="状态" width="100">
+        <template #default="{ row }">
+          <el-switch
+            v-model="row.enabled"
+            @change="(val) => handleStatusChange(row, val as boolean)"
+          />
         </template>
       </el-table-column>
       <el-table-column prop="createdAt" label="创建时间" width="200">
@@ -175,6 +182,15 @@ const handleDelete = (row: UserResponse) => {
       // 错误由拦截器统一处理
     }
   }).catch(() => {})
+}
+
+const handleStatusChange = async (row: UserResponse, val: boolean) => {
+  try {
+    await updateUser(row.id, { enabled: val })
+    ElMessage.success(`用户 ${row.username} 状态已更新为 ${val ? '启用' : '停用'}`)
+  } catch (e: any) {
+    row.enabled = !val // revert
+  }
 }
 </script>
 

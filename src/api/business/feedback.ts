@@ -18,3 +18,14 @@ export function searchFeedback(params?: {
 }) {
     return request.get<PageResponse<QaFeedbackResponse>>('/api/feedback', { params })
 }
+
+export function exportFeedback(params?: {
+    userId?: number
+    from?: string
+    to?: string
+}) {
+    return request.get('/api/feedback/export', { 
+        params,
+        responseType: 'blob' 
+    })
+}

@@ -18,6 +18,7 @@ export interface UserResponse {
     id: number
     username: string
     role: string
+    avatar?: string
     createdAt: string
     updatedAt: string
 }
@@ -35,6 +36,12 @@ export interface UserUpdateRequest {
 
 export interface MeUpdateRequest {
     username?: string
+    avatar?: string
+}
+
+export interface PasswordUpdateRequest {
+    oldPassword: string
+    newPassword: string
 }
 
 /* ============  Role  ============ */
@@ -76,7 +83,7 @@ export interface PermissionOptionResponse {
 }
 
 /* ============  Document  ============ */
-export type DocumentStatus = 'UPLOADED' | 'READY' | 'FAILED'
+export type DocumentStatus = 'UPLOADED' | 'PARSING' | 'READY' | 'FAILED'
 
 export interface DocumentResponse {
     id: number
@@ -86,6 +93,7 @@ export interface DocumentResponse {
     contentType?: string
     fileSize: number
     status: DocumentStatus
+    errorMessage?: string
     allowedRoles: string[]
     createdAt: string
     updatedAt: string
@@ -98,6 +106,7 @@ export interface DocumentSummaryResponse {
     contentType?: string
     fileSize: number
     status: DocumentStatus
+    errorMessage?: string
     allowedRoles: string[]
     createdAt: string
     updatedAt: string

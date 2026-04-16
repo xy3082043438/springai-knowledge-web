@@ -126,7 +126,8 @@ const formatDateTimeLabel = (value: string) => {
 
 const statusMeta: Record<string, { label: string; color: string }> = {
   READY: { label: '已索引', color: '#22c55e' },
-  UPLOADED: { label: '待处理', color: '#f59e0b' },
+  UPLOADED: { label: '待处理', color: '#64748b' },
+  PARSING: { label: '解析中', color: '#f59e0b' },
   FAILED: { label: '失败', color: '#ef4444' },
 }
 
