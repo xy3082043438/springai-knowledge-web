@@ -20,6 +20,24 @@
             @keyup.enter="handleLogin"
           />
         </el-form-item>
+        <el-form-item label="验证码" prop="captchaCode">
+          <div class="captcha-container">
+            <el-input
+              v-model="loginForm.captchaCode"
+              prefix-icon="CircleCheck"
+              placeholder="计算结果"
+              class="captcha-input"
+              @keyup.enter="handleLogin"
+            />
+            <div class="captcha-img-box" @click="refreshCaptcha" v-loading="captchaLoading">
+              <img v-if="captchaImg" :src="captchaImg" alt="验证码" title="点击刷新" />
+              <span v-else>加载中</span>
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item class="remember-item">
+          <el-checkbox v-model="loginForm.rememberMe">记住我 (自动登录)</el-checkbox>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" class="login-btn" :loading="loading" @click="handleLogin">
             登录
@@ -36,6 +54,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useUserStore } from '@/store/user'
+import { getCaptcha } from '@/api/auth'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -44,8 +63,14 @@ const loading = ref(false)
 
 const loginForm = reactive({
   username: '',
-  password: ''
+  password: '',
+  captchaCode: '',
+  captchaKey: '',
+  rememberMe: false
 })
+
+const captchaImg = ref('')
+const captchaLoading = ref(false)
 
 const rules = reactive<FormRules>({
   username: [
@@ -55,8 +80,26 @@ const rules = reactive<FormRules>({
   password: [
     { required: true, message: '登录密码不能为空，请填写', trigger: 'blur' },
     { min: 6, max: 100, message: '密码长度 6-100', trigger: 'blur' },
+  ],
+  captchaCode: [
+    { required: true, message: '请输入计算结果', trigger: 'blur' },
   ]
 })
+
+const refreshCaptcha = async () => {
+  captchaLoading.value = true
+  try {
+    const { data } = await getCaptcha()
+    captchaImg.value = data.captchaImg
+    loginForm.captchaKey = data.captchaKey
+    loginForm.captchaCode = ''
+  } catch (e) {
+    console.error('Captcha load failed:', e)
+    ElMessage.error('验证码加载失败，请检查网络或刷新页面')
+  } finally {
+    captchaLoading.value = false
+  }
+}
 
 onMounted(() => {
   const authRedirectMessage = sessionStorage.getItem('auth_redirect_message')
@@ -64,6 +107,7 @@ onMounted(() => {
     ElMessage.warning(authRedirectMessage)
     sessionStorage.removeItem('auth_redirect_message')
   }
+  refreshCaptcha()
 })
 
 const handleLogin = async () => {
@@ -76,6 +120,9 @@ const handleLogin = async () => {
         await userStore.login({
           username: loginForm.username,
           password: loginForm.password,
+          captchaCode: loginForm.captchaCode,
+          captchaKey: loginForm.captchaKey,
+          rememberMe: loginForm.rememberMe
         })
         ElMessage.success('欢迎回来，登录成功！')
         router.push('/dashboard')
@@ -137,6 +184,42 @@ const handleLogin = async () => {
 
 .login-btn {
   width: 100%;
+}
+
+.captcha-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.captcha-input {
+  flex: 1;
+}
+
+.captcha-img-box {
+  width: 110px;
+  height: 40px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.captcha-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remember-item {
+  margin-bottom: 12px !important;
 }
 
 /* 解决浏览器自动填充导致的输入框背景色改变变暗变怪问题 */

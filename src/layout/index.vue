@@ -12,10 +12,12 @@
       >
         <div class="logo" :class="{ 'logo-collapsed': isCollapse }">
           <img src="/logo.svg" class="logo-badge" alt="logo" />
-          <div v-if="!isCollapse" class="logo-text">
-            <div class="logo-title">企业知识库</div>
-            <div class="logo-subtitle">基于 SpringAI 架构</div>
-          </div>
+          <transition name="logo-fade">
+            <div v-show="!isCollapse" class="logo-text">
+              <div class="logo-title">企业知识库</div>
+              <div class="logo-subtitle">基于 SpringAI 架构</div>
+            </div>
+          </transition>
         </div>
         <el-menu-item v-for="item in topLevelMenu" :key="item.path" :index="item.path">
           <el-icon><component :is="item.icon" /></el-icon>
@@ -156,8 +158,9 @@ onMounted(async () => {
 .app-aside {
   background: linear-gradient(180deg, #2b3b55 0%, #243247 100%);
   color: #d7e0ea;
-  transition: width 0.3s;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 6px 0 18px rgba(15, 23, 42, 0.12);
+  overflow-x: hidden;
 }
 
 .el-menu-vertical {
@@ -168,7 +171,7 @@ onMounted(async () => {
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   height: 68px;
   padding: 0 18px;
   color: #fff;
@@ -176,6 +179,7 @@ onMounted(async () => {
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   margin-bottom: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logo-collapsed {
@@ -185,10 +189,11 @@ onMounted(async () => {
 
 .logo-badge {
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logo-text {
@@ -351,5 +356,31 @@ onMounted(async () => {
 .fade-transform-leave-to {
   opacity: 0;
   transform: translateX(30px);
+}
+
+/* Logo 渐变动画 */
+.logo-fade-enter-active {
+  transition: all 0.3s ease-out;
+  transition-delay: 0.1s;
+}
+
+.logo-fade-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.logo-fade-enter-from,
+.logo-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+/* 优化菜单折叠时的文字显示 */
+:deep(.el-menu-vertical:not(.el-menu--collapse)) {
+  width: 236px;
+}
+
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title) {
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s, padding 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 </style>

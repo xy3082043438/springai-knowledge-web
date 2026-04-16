@@ -8,3 +8,7 @@ export function login(data: AuthLoginRequest) {
 export function logout() {
     return request.post('/api/auth/logout')
 }
+
+export function getCaptcha() {
+    return request.get<{ captchaKey: string; captchaImg: string }>('/api/auth/captcha')
+}
