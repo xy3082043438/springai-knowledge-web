@@ -22,7 +22,11 @@
         </template>
       </el-table-column>
       <el-table-column prop="description" label="描述" width="250" show-overflow-tooltip />
-      <el-table-column prop="updatedAt" label="更新时间" width="180" />
+      <el-table-column prop="updatedAt" label="更新时间" width="180">
+        <template #default="{ row }">
+          {{ formatDateTime(row.updatedAt) }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="180" fixed="right">
         <template #default="{ row }">
           <template v-if="editingKey === row.key">
@@ -42,6 +46,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { listConfigs, upsertConfig, refreshConfig } from '@/api/system/config'
+import { formatDateTime } from '@/utils/date'
 import type { SystemConfigResponse } from '@/types/api'
 
 const loading = ref(false)
@@ -141,4 +146,3 @@ const handleRefresh = async () => {
   margin-top: 4px;
 }
 </style>
-

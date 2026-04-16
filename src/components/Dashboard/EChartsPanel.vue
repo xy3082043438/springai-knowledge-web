@@ -358,8 +358,8 @@ onUnmounted(() => {
 .chart-panel {
   position: relative;
   overflow: hidden;
-  padding: 22px 22px 18px;
-  border-radius: 22px;
+  padding: 14px 16px 12px;
+  border-radius: 20px;
   border: 1px solid #e6edf7;
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
 }
@@ -451,7 +451,7 @@ onUnmounted(() => {
 
 .chart-canvas {
   width: 100%;
-  height: 300px;
+  height: 220px;
 }
 
 .chart-empty {
@@ -459,11 +459,11 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 260px;
-  border-radius: 18px;
+  min-height: 200px;
+  border-radius: 16px;
   border: 1px dashed #dbe4f3;
   background: rgba(248, 251, 255, 0.6);
-  padding: 32px 24px;
+  padding: 24px 16px;
   text-align: center;
 }
 

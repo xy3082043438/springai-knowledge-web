@@ -12,7 +12,6 @@
     </div>
 
     <el-table :data="roles" v-loading="loading" style="width: 100%;" stripe border>
-      <el-table-column prop="id" label="ID" width="70" />
       <el-table-column prop="name" label="角色名称" width="160">
         <template #default="{ row }">
           <div class="role-name-cell">
@@ -38,7 +37,7 @@
       <el-table-column prop="userCount" label="关联用户" width="100" align="center" />
       <el-table-column prop="documentCount" label="关联文档" width="100" align="center" />
       <el-table-column prop="createdAt" label="创建时间" width="180">
-        <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
+        <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
       </el-table-column>
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row }">
@@ -127,6 +126,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { listRoles, createRole, updateRole, deleteRole } from '@/api/system/role'
 import { permissionGroups, type PermissionOption } from '@/utils/rbac'
+import { formatDateTime } from '@/utils/date'
 import type { RoleResponse, Permission } from '@/types/api'
 
 const loading = ref(false)
@@ -289,10 +289,7 @@ const saveRole = async () => {
   })
 }
 
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('zh-CN', { hour12: false })
-}
+// Local redundant function removed.
 </script>
 
 <style scoped>

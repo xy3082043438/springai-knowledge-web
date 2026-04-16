@@ -12,7 +12,6 @@
     </div>
 
     <el-table :data="users" v-loading="loading" style="width: 100%;" stripe border>
-      <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="username" label="用户名" min-width="180" />
       <el-table-column prop="role" label="角色" min-width="150">
         <template #default="{ row }">
@@ -20,10 +19,10 @@
         </template>
       </el-table-column>
       <el-table-column prop="createdAt" label="创建时间" width="200">
-        <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
+        <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
       </el-table-column>
       <el-table-column prop="updatedAt" label="更新时间" width="200">
-        <template #default="{ row }">{{ formatDate(row.updatedAt) }}</template>
+        <template #default="{ row }">{{ formatDateTime(row.updatedAt) }}</template>
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template #default="{ row }">
@@ -63,6 +62,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { listUsers, createUser, updateUser, deleteUser } from '@/api/system/user'
 import { listRoles } from '@/api/system/role'
+import { formatDateTime } from '@/utils/date'
 import type { UserResponse, RoleResponse } from '@/types/api'
 
 const loading = ref(false)
@@ -129,9 +129,8 @@ const handleEdit = (row: UserResponse) => {
   dialogVisible.value = true
 }
 
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('zh-CN', { hour12: false })
+const formatDateLabel = (dateStr?: string) => {
+  return formatDateTime(dateStr)
 }
 
 const saveUser = async () => {

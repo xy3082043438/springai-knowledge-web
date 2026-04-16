@@ -4,7 +4,6 @@ export interface AuthLoginRequest {
     password: string
     captchaCode?: string
     captchaKey?: string
-    rememberMe?: boolean
 }
 
 export interface AuthLoginResponse {

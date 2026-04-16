@@ -56,6 +56,7 @@ import type { MetricCard } from '@/components/Dashboard/MetricCards.vue'
 import type { TrendItem } from '@/components/Dashboard/TrendPanel.vue'
 import type { DistributionItem } from '@/components/Dashboard/DistributionPanel.vue'
 import type { StatusItem } from '@/components/Dashboard/StatusPanel.vue'
+import { formatDateTime } from '@/utils/date'
 
 import DashboardHero from '@/components/Dashboard/DashboardHero.vue'
 import MetricCards from '@/components/Dashboard/MetricCards.vue'
@@ -120,15 +121,7 @@ const formatShortDate = (value: string) => {
 }
 
 const formatDateTimeLabel = (value: string) => {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return '刚刚'
-  return date.toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+  return formatDateTime(value)
 }
 
 const statusMeta: Record<string, { label: string; color: string }> = {
@@ -362,8 +355,8 @@ onMounted(() => {
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 6px;
+  gap: 14px;
+  padding: 4px;
 }
 
 .dashboard-container::before {
@@ -381,7 +374,7 @@ onMounted(() => {
 .panel-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
 }
 
 .panel-grid-admin .panel-wide {

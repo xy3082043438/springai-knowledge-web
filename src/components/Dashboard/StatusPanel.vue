@@ -68,8 +68,8 @@ const donutStyle = computed(() => {
 .panel {
   position: relative;
   overflow: hidden;
-  padding: 20px 20px 18px;
-  border-radius: 22px;
+  padding: 14px 16px 14px;
+  border-radius: 20px;
   border: 1px solid #e6edf7;
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
   animation: riseIn 0.55s ease both;
@@ -128,16 +128,16 @@ const donutStyle = computed(() => {
 .status-layout {
   margin-top: 18px;
   display: grid;
-  grid-template-columns: 164px minmax(0, 1fr);
-  align-items: start;
-  gap: 34px;
+  grid-template-columns: 144px minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
 }
 
 .status-donut {
-  width: 164px;
-  height: 164px;
+  width: 144px;
+  height: 144px;
   border-radius: 50%;
-  padding: 14px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,19 +157,19 @@ const donutStyle = computed(() => {
 }
 
 .status-donut-inner strong {
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
   color: #10233f;
 }
 
 .status-donut-inner span {
   margin-top: 8px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .status-donut-inner small {
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: 4px;
+  font-size: 11px;
   color: #64748b;
 }
 
@@ -185,8 +185,8 @@ const donutStyle = computed(() => {
   grid-template-columns: 12px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(231, 236, 245, 0.9);
 }

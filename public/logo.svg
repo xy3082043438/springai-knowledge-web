@@ -1,131 +1,69 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <!-- 主背景渐变 -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="50%" stop-color="#2563eb"/>
-      <stop offset="100%" stop-color="#1d4ed8"/>
-    </linearGradient>
-    <!-- 高光渐变 -->
-    <linearGradient id="sheen" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.28)"/>
-      <stop offset="40%" stop-color="rgba(255,255,255,0.06)"/>
-      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-    </linearGradient>
-    <!-- 书页左 -->
-    <linearGradient id="pageL" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.97)"/>
-      <stop offset="100%" stop-color="rgba(240,245,255,0.88)"/>
-    </linearGradient>
-    <!-- 书页右 -->
-    <linearGradient id="pageR" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.85)"/>
-      <stop offset="100%" stop-color="rgba(230,238,255,0.70)"/>
-    </linearGradient>
     <!-- AI 光环渐变 -->
     <linearGradient id="aiRing" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#60a5fa"/>
       <stop offset="100%" stop-color="#a78bfa"/>
     </linearGradient>
-    <!-- 阴影滤镜 -->
-    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="rgba(15,23,42,0.18)"/>
-    </filter>
-    <filter id="glowSoft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="innerGlow">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    
+    <!-- 书页渐变 - 调整为更高亮 -->
+    <linearGradient id="pageL" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,1)"/>
+      <stop offset="100%" stop-color="rgba(191,219,254,0.9)"/>
+    </linearGradient>
+    <linearGradient id="pageR" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
+      <stop offset="100%" stop-color="rgba(147,197,253,0.8)"/>
+    </linearGradient>
+
+    <!-- 辉光滤镜 -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
   </defs>
 
-  <!-- 背景圆角矩形 -->
-  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <!-- 去掉了背景色矩形，让图标透明 -->
 
-  <!-- 高光层 -->
-  <rect width="512" height="512" rx="112" fill="url(#sheen)"/>
+  <g filter="url(#glow)">
+    <!-- ======== 翻开的书 ======== -->
+    <g>
+      <!-- 左页 -->
+      <path d="M256 215 Q176 205, 78 225 L78 408 Q176 392, 256 400 Z" fill="url(#pageL)"/>
+      <!-- 右页 -->
+      <path d="M256 215 Q336 205, 434 225 L434 408 Q336 392, 256 400 Z" fill="url(#pageR)"/>
+      <!-- 书脊 -->
+      <line x1="256" y1="215" x2="256" y2="400" stroke="#3b82f6" stroke-width="4" opacity="0.6"/>
+    </g>
 
-  <!-- 微妙纹理：顶部椭圆高光 -->
-  <ellipse cx="256" cy="20" rx="260" ry="140" fill="rgba(255,255,255,0.07)"/>
+    <!-- 文字线条 -->
+    <g stroke="#2563eb" stroke-width="6" stroke-linecap="round" opacity="0.3">
+      <line x1="120" y1="275" x2="210" y2="268"/>
+      <line x1="120" y1="305" x2="200" y2="298"/>
+      <line x1="120" y1="335" x2="190" y2="330"/>
+    </g>
 
-  <!-- ======== 翻开的书 ======== -->
-  <g filter="url(#dropShadow)">
-    <!-- 左页 -->
-    <path d="M256 215 Q176 205, 78 225 L78 408 Q176 392, 256 400 Z" fill="url(#pageL)"/>
-    <!-- 右页 -->
-    <path d="M256 215 Q336 205, 434 225 L434 408 Q336 392, 256 400 Z" fill="url(#pageR)"/>
-    <!-- 书脊 -->
-    <line x1="256" y1="215" x2="256" y2="400" stroke="rgba(59,130,246,0.25)" stroke-width="3"/>
+    <!-- ======== AI 核心 ======== -->
+    <!-- 外圈光环 -->
+    <circle cx="256" cy="155" r="85" fill="none" stroke="url(#aiRing)" stroke-width="4" opacity="0.8"/>
+    <!-- 主圆 -->
+    <circle cx="256" cy="155" r="70" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+
+    <!-- 内部神经节点 -->
+    <g fill="white">
+      <circle cx="256" cy="135" r="10" opacity="1"/>
+      <circle cx="218" cy="155" r="7.5" opacity="0.9"/>
+      <circle cx="294" cy="155" r="7.5" opacity="0.9"/>
+      <circle cx="256" cy="185" r="7.5" opacity="0.9"/>
+    </g>
+
+    <!-- 连接线 -->
+    <g stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.7">
+      <line x1="256" y1="135" x2="218" y2="155"/>
+      <line x1="256" y1="135" x2="294" y2="155"/>
+      <line x1="256" y1="135" x2="256" y2="185"/>
+      <line x1="218" y1="155" x2="256" y2="185"/>
+      <line x1="294" y1="155" x2="256" y2="185"/>
+    </g>
   </g>
-
-  <!-- 左页文字线条 -->
-  <g stroke="rgba(59,130,246,0.22)" stroke-width="5" stroke-linecap="round">
-    <line x1="112" y1="275" x2="222" y2="268"/>
-    <line x1="112" y1="298" x2="210" y2="292"/>
-    <line x1="112" y1="321" x2="198" y2="316"/>
-    <line x1="112" y1="344" x2="216" y2="340"/>
-    <line x1="112" y1="367" x2="190" y2="364"/>
-  </g>
-
-  <!-- 右页文字线条 -->
-  <g stroke="rgba(59,130,246,0.16)" stroke-width="5" stroke-linecap="round">
-    <line x1="290" y1="268" x2="400" y2="275"/>
-    <line x1="290" y1="292" x2="388" y2="298"/>
-    <line x1="290" y1="316" x2="376" y2="321"/>
-    <line x1="290" y1="340" x2="392" y2="344"/>
-  </g>
-
-  <!-- ======== AI 大脑/对话核心 ======== -->
-  <!-- 外圈光环 -->
-  <circle cx="256" cy="155" r="82" fill="none" stroke="url(#aiRing)" stroke-width="3" opacity="0.5"/>
-  <!-- 主圆 —— AI 核心 -->
-  <circle cx="256" cy="155" r="68" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
-
-  <!-- 内部神经节点网络 -->
-  <g filter="url(#innerGlow)">
-    <!-- 核心节点 -->
-    <circle cx="256" cy="135" r="8" fill="white" opacity="0.95"/>
-    <!-- 左上 -->
-    <circle cx="218" cy="148" r="6.5" fill="white" opacity="0.9"/>
-    <!-- 右上 -->
-    <circle cx="294" cy="148" r="6.5" fill="white" opacity="0.9"/>
-    <!-- 左下 -->
-    <circle cx="228" cy="178" r="5.5" fill="white" opacity="0.8"/>
-    <!-- 右下 -->
-    <circle cx="284" cy="178" r="5.5" fill="white" opacity="0.8"/>
-    <!-- 底中 -->
-    <circle cx="256" cy="190" r="4.5" fill="white" opacity="0.7"/>
-    <!-- 顶 -->
-    <circle cx="256" cy="112" r="5" fill="white" opacity="0.75"/>
-  </g>
-
-  <!-- 连接线 -->
-  <g stroke="rgba(255,255,255,0.45)" stroke-width="2.2" stroke-linecap="round">
-    <line x1="256" y1="135" x2="218" y2="148"/>
-    <line x1="256" y1="135" x2="294" y2="148"/>
-    <line x1="256" y1="135" x2="256" y2="112"/>
-    <line x1="218" y1="148" x2="228" y2="178"/>
-    <line x1="294" y1="148" x2="284" y2="178"/>
-    <line x1="228" y1="178" x2="256" y2="190"/>
-    <line x1="284" y1="178" x2="256" y2="190"/>
-    <line x1="218" y1="148" x2="294" y2="148"/>
-    <line x1="256" y1="135" x2="228" y2="178"/>
-    <line x1="256" y1="135" x2="284" y2="178"/>
-  </g>
-
-  <!-- 外围轨道小点 —— 数据流动感 -->
-  <circle cx="192" cy="120" r="3.5" fill="rgba(255,255,255,0.55)"/>
-  <circle cx="320" cy="120" r="3.5" fill="rgba(255,255,255,0.55)"/>
-  <circle cx="180" cy="170" r="3" fill="rgba(255,255,255,0.4)"/>
-  <circle cx="332" cy="170" r="3" fill="rgba(255,255,255,0.4)"/>
-  <circle cx="256" cy="90" r="3" fill="rgba(255,255,255,0.35)"/>
-
-  <!-- 轨道弧线 -->
-  <path d="M192 120 Q175 145, 180 170" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-  <path d="M320 120 Q337 145, 332 170" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-
-  <!-- ======== 底部品牌光带 ======== -->
-  <rect x="140" y="430" width="232" height="4" rx="2" fill="rgba(255,255,255,0.15)"/>
 </svg>

@@ -36,15 +36,15 @@ defineProps<{ cards: MetricCard[] }>()
 <style scoped>
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
 }
 
 .metric-card {
   position: relative;
   overflow: hidden;
-  padding: 18px 18px 16px;
-  border-radius: 22px;
+  padding: 12px 14px 10px;
+  border-radius: 16px;
   border: 1px solid #e6edf7;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96)),
@@ -83,9 +83,9 @@ defineProps<{ cards: MetricCard[] }>()
 }
 
 .metric-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   background: var(--metric-soft);
   color: var(--metric-accent);
   display: inline-flex;
@@ -95,14 +95,14 @@ defineProps<{ cards: MetricCard[] }>()
 }
 
 .metric-label {
-  font-size: 14px;
+  font-size: 13px;
   color: #5b6475;
 }
 
 .metric-value {
   position: relative;
-  margin-top: 18px;
-  font-size: 36px;
+  margin-top: 10px;
+  font-size: 26px;
   font-weight: 700;
   color: #10233f;
   letter-spacing: -0.03em;
@@ -110,9 +110,9 @@ defineProps<{ cards: MetricCard[] }>()
 
 .metric-note {
   position: relative;
-  margin-top: 8px;
+  margin-top: 4px;
   color: #6b7280;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .metric-card:nth-child(1) { animation-delay: 0.04s; }

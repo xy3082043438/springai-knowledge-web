@@ -14,11 +14,11 @@
       </div>
       <div class="info-item">
         <span class="info-label">注册时间</span>
-        <span class="info-value">{{ formatDate(userInfo?.createdAt) }}</span>
+        <span class="info-value">{{ formatDateTime(userInfo?.createdAt) }}</span>
       </div>
       <div class="info-item">
         <span class="info-label">最近更新</span>
-        <span class="info-value">{{ formatDate(userInfo?.updatedAt) }}</span>
+        <span class="info-value">{{ formatDateTime(userInfo?.updatedAt) }}</span>
       </div>
     </div>
   </div>
@@ -27,15 +27,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUserStore } from '@/store/user'
+import { formatDateTime } from '@/utils/date'
 
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
 const avatarChar = computed(() => userInfo.value?.username?.charAt(0).toUpperCase() || 'U')
 
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('zh-CN', { hour12: false })
-}
+// Local redundant function removed.
 </script>
 
 <style scoped>

@@ -25,7 +25,6 @@
     </div>
 
     <el-table :data="documents" v-loading="loading" style="width: 100%;" stripe border>
-      <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="title" label="文档标题" min-width="200" show-overflow-tooltip />
       <el-table-column label="文件名" width="200" show-overflow-tooltip>
         <template #default="{ row }">
@@ -53,10 +52,11 @@
         </template>
       </el-table-column>
       <el-table-column prop="createdAt" label="创建时间" width="180">
-        <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
+        <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
       </el-table-column>
-      <el-table-column v-if="canManageKnowledge" label="操作" width="240" fixed="right">
+      <el-table-column v-if="canManageKnowledge" label="操作" width="280" fixed="right">
         <template #default="{ row }">
+          <el-button link type="primary" size="small" @click="handlePreview(row)">预览</el-button>
           <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
           <el-button link type="warning" size="small" @click="handleReindex(row)">重索引</el-button>
           <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
@@ -93,17 +93,45 @@
     </el-dialog>
 
     <!-- Upload Dialog -->
-    <el-dialog v-model="uploadVisible" title="上传文件" width="500px" align-center @closed="resetUploadDialog">
-      <el-form label-width="80px" label-position="left">
+    <el-dialog 
+      v-model="uploadVisible" 
+      title="上传文件" 
+      width="540px" 
+      align-center 
+      @closed="resetUploadDialog"
+      custom-class="premium-upload-dialog"
+    >
+      <template #header>
+        <div class="dialog-header">
+          <el-icon class="header-icon"><Upload /></el-icon>
+          <span class="header-title">上传新文档</span>
+        </div>
+      </template>
+
+      <el-form label-width="80px" label-position="top" class="premium-form">
         <el-form-item label="文档标题">
-          <el-input v-model="uploadForm.title" placeholder="文档标题（可选，留空默认使用上传的文件名）" />
+          <el-input 
+            v-model="uploadForm.title" 
+            placeholder="留空则自动提取文件名" 
+            class="premium-input"
+          />
         </el-form-item>
-        <el-form-item label="允许角色">
-          <el-select v-model="uploadForm.allowedRoles" multiple placeholder="请点击选择可见角色..." style="width: 100%;">
+        
+        <el-form-item label="允许可见的角色">
+          <el-select 
+            v-model="uploadForm.allowedRoles" 
+            multiple 
+            collapse-tags
+            collapse-tags-indicator
+            placeholder="请选择授权可见的角色..." 
+            style="width: 100%;"
+            class="premium-select"
+          >
             <el-option v-for="role in roles" :key="role.name" :label="role.name" :value="role.name" />
           </el-select>
         </el-form-item>
-        <el-form-item label="选择文件">
+        
+        <el-form-item label="选择源文件">
           <el-upload
             ref="uploadRef"
             :accept="supportedFileAccept"
@@ -113,19 +141,39 @@
             :on-remove="handleFileRemove"
             :on-exceed="() => ElMessage.warning('抱歉，每次只能上传一个文件')"
             drag
-            style="width: 100%;"
+            class="premium-upload-box"
           >
-            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-            <div class="el-upload__text">拖拽文件到此处，或 <em>点击选择</em></div>
-            <template #tip>
-              <div class="el-upload__tip">支持 {{ supportedFileLabel }}，单次限 1 个文件</div>
-            </template>
+            <div class="upload-content">
+              <div class="upload-icon-wrapper">
+                <el-icon class="upload-main-icon"><UploadFilled /></el-icon>
+              </div>
+              <div class="upload-primary-text">将文件拖拽到此处，或 <span>点击上传</span></div>
+              <div class="upload-secondary-text">建议文件大小不超过 20MB</div>
+            </div>
           </el-upload>
+          
+          <div class="support-labels">
+            <span class="support-title">支持格式：</span>
+            <div class="format-tags">
+              <el-tag v-for="ext in ['PDF', 'DOCX', 'XLSX', 'TXT', 'MD']" :key="ext" size="small" effect="plain" round class="format-tag">{{ ext }}</el-tag>
+              <span class="more-formats">等 {{ supportedFileExtensions.length }} 种</span>
+            </div>
+          </div>
         </el-form-item>
       </el-form>
+      
       <template #footer>
-        <el-button @click="uploadVisible = false">取消</el-button>
-        <el-button type="primary" :loading="uploading" @click="submitUpload">确认上传</el-button>
+        <div class="dialog-footer">
+          <el-button @click="uploadVisible = false" class="btn-cancel">取消</el-button>
+          <el-button 
+            type="primary" 
+            :loading="uploading" 
+            @click="submitUpload"
+            class="btn-submit"
+          >
+            立刻开始解析
+          </el-button>
+        </div>
       </template>
     </el-dialog>
 
@@ -146,14 +194,19 @@
         <el-button type="primary" @click="submitEdit">保存</el-button>
       </template>
     </el-dialog>
+
+    <!-- Document Preview -->
+    <DocumentPreview ref="previewRef" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { UploadFilled } from '@element-plus/icons-vue'
+import { UploadFilled, Upload, Search, Refresh } from '@element-plus/icons-vue'
 import type { UploadFile, UploadInstance } from 'element-plus'
+import DocumentPreview from '@/components/DocumentPreview.vue'
+import { formatDateTime } from '@/utils/date'
 import {
   listDocuments,
   searchDocuments,
@@ -191,6 +244,9 @@ const uploading = ref(false)
 const uploadRef = ref<UploadInstance>()
 const selectedFile = ref<File | null>(null)
 const uploadForm = ref({ title: '', allowedRoles: [] as string[] })
+
+// Preview
+const previewRef = ref()
 
 // Edit
 const editVisible = ref(false)
@@ -342,6 +398,10 @@ const submitUpload = async () => {
   }
 }
 
+const handlePreview = (row: DocumentSummaryResponse) => {
+  previewRef.value?.open(row.id)
+}
+
 const handleEdit = (row: DocumentSummaryResponse) => {
   editForm.value = {
     id: row.id,
@@ -389,10 +449,6 @@ const handleReindexAll = async () => {
   } catch { /* interceptor */ }
 }
 
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('zh-CN', { hour12: false })
-}
 
 const getFileNameLabel = (row: DocumentSummaryResponse) => row.fileName || '文本录入'
 
@@ -461,6 +517,172 @@ const formatSize = (bytes: number | null) => {
   font-size: 12px;
   color: #6b7280;
   margin-top: 4px;
+}
+
+/* Premium Upload Dialog Styles */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-icon {
+  font-size: 22px;
+  color: #3b82f6;
+  background: #eff6ff;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.premium-form {
+  padding: 10px 4px;
+}
+
+:deep(.premium-form .el-form-item__label) {
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px !important;
+  line-height: 1;
+}
+
+.premium-input :deep(.el-input__wrapper),
+.premium-select :deep(.el-select__wrapper) {
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px #e2e8f0 inset;
+  padding: 4px 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-input :deep(.el-input__wrapper.is-focus),
+.premium-select :deep(.el-select__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px #3b82f6 inset, 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+}
+
+.premium-upload-box {
+  width: 100%;
+}
+
+:deep(.premium-upload-box .el-upload-dragger) {
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  background-color: #f8fafc;
+  transition: all 0.4s ease;
+  padding: 30px 20px;
+}
+
+:deep(.premium-upload-box .el-upload-dragger:hover) {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.1);
+}
+
+.upload-icon-wrapper {
+  margin-bottom: 16px;
+}
+
+.upload-main-icon {
+  font-size: 48px;
+  color: #64748b;
+  transition: all 0.4s ease;
+}
+
+:deep(.el-upload-dragger:hover) .upload-main-icon {
+  color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.upload-primary-text {
+  font-size: 15px;
+  color: #334155;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.upload-primary-text span {
+  color: #3b82f6;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.upload-secondary-text {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.support-labels {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.support-title {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.format-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.format-tag {
+  background: white;
+  border-color: #e2e8f0;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.more-formats {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.btn-cancel {
+  border-radius: 10px;
+  padding: 10px 20px;
+  height: 40px;
+  font-weight: 500;
+  border-color: #e2e8f0;
+}
+
+.btn-submit {
+  border-radius: 10px;
+  padding: 10px 24px;
+  height: 40px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  opacity: 0.9;
+}
+
+.btn-submit:active {
+  transform: translateY(0);
 }
 </style>
 

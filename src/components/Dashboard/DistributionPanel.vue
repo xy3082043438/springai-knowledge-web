@@ -48,8 +48,8 @@ defineProps<{
 .panel {
   position: relative;
   overflow: hidden;
-  padding: 20px 20px 18px;
-  border-radius: 22px;
+  padding: 14px 16px 14px;
+  border-radius: 20px;
   border: 1px solid #e6edf7;
   background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
@@ -105,7 +105,7 @@ defineProps<{
 }
 
 .distribution-list {
-  margin-top: 18px;
+  margin-top: 14px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -146,7 +146,7 @@ defineProps<{
 }
 
 .distribution-track {
-  height: 10px;
+  height: 8px;
   border-radius: 999px;
   background: #edf2fb;
   overflow: hidden;
@@ -159,9 +159,9 @@ defineProps<{
 }
 
 .empty-state {
-  margin-top: 18px;
-  min-height: 180px;
-  border-radius: 18px;
+  margin-top: 14px;
+  min-height: 120px;
+  border-radius: 16px;
   border: 1px dashed #dbe4f3;
   background: #f8fbff;
   color: #7c8798;

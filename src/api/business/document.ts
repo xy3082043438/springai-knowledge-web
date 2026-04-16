@@ -67,3 +67,9 @@ export function reindexOne(id: number) {
 export function previewChunk(chunkId: number) {
     return request.get<DocumentChunkPreviewResponse>(`/api/documents/chunks/${chunkId}`)
 }
+
+export function getDocumentFile(id: number) {
+    return request.get(`/api/documents/${id}/file`, {
+        responseType: 'blob'
+    })
+}
