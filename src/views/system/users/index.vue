@@ -22,7 +22,7 @@
           <el-switch
             v-model="row.enabled"
             :disabled="!canWrite || row.username === 'admin'"
-            @change="(val) => handleStatusChange(row, val as boolean)"
+            @change="(val: boolean) => handleStatusChange(row, val)"
           />
         </template>
       </el-table-column>
