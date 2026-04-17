@@ -82,15 +82,15 @@ let wordChart: echarts.ECharts | null = null
 
 const THEME_PALETTE = ['#2563eb', '#0ea5e9', '#14b8a6', '#8b5cf6', '#f59e0b', '#f97316', '#ec4899', '#6366f1']
 
-const hasTrendData = computed(() => (props.dashboardData?.dailyQaTrend?.length ?? 0) > 0 || true) // Force mock data for demo
-const hasPieData = computed(() => (props.dashboardData?.documentTypeDistribution?.length ?? 0) > 0 || true) // Force mock data for demo
-const hasWordData = computed(() => (props.dashboardData?.hotQuestionKeywords?.length ?? 0) > 0 || true) // Force mock data for demo
+const hasTrendData = computed(() => (props.dashboardData?.dailyQaTrend?.length ?? 0) > 0)
+const hasPieData = computed(() => (props.dashboardData?.documentTypeDistribution?.length ?? 0) > 0)
+const hasWordData = computed(() => (props.dashboardData?.hotQuestionKeywords?.length ?? 0) > 0)
 
 const trendTotal = computed(() =>
-  props.dashboardData?.dailyQaTrend?.reduce((sum, d) => sum + d.count, 0) || 1205 // Mock total
+  props.dashboardData?.dailyQaTrend?.reduce((sum, d) => sum + d.count, 0) || 0
 )
-const trendDays = computed(() => props.dashboardData?.trendDays || 7) // Mock days
-const keywordCount = computed(() => props.dashboardData?.hotQuestionKeywords?.length || 23) // Mock words
+const trendDays = computed(() => props.dashboardData?.trendDays || 0)
+const keywordCount = computed(() => props.dashboardData?.hotQuestionKeywords?.length || 0)
 
 const resizeCharts = () => {
   trendChart?.resize()
@@ -102,12 +102,7 @@ const renderTrendChart = () => {
   if (!trendRef.value) return
   if (!trendChart) trendChart = echarts.init(trendRef.value)
 
-  const data = props.dashboardData?.dailyQaTrend?.length ? props.dashboardData.dailyQaTrend : [
-    { date: '04-09', count: 45 }, { date: '04-10', count: 56 }, 
-    { date: '04-11', count: 32 }, { date: '04-12', count: 120 }, 
-    { date: '04-13', count: 85 }, { date: '04-14', count: 215 }, 
-    { date: '04-15', count: 156 }
-  ];
+  const data = props.dashboardData?.dailyQaTrend || [];
   const max = Math.max(...data.map(d => d.count), 0)
   trendChart.setOption({
     tooltip: {
@@ -167,15 +162,7 @@ const renderPieChart = () => {
   if (!pieRef.value) return
   if (!pieChart) pieChart = echarts.init(pieRef.value)
 
-  const rawData = props.dashboardData?.documentTypeDistribution?.length ? 
-    props.dashboardData.documentTypeDistribution : 
-    [
-      { label: 'PDF技术文档', value: 45, type: 'application/pdf' },
-      { label: 'Markdown笔记', value: 20, type: 'text/markdown' },
-      { label: 'Word业务文档', value: 15, type: 'application/msword' },
-      { label: '运维规章', value: 10, type: 'text/plain' },
-      { label: '其它补充', value: 3, type: 'other' }
-    ];
+  const rawData = props.dashboardData?.documentTypeDistribution || [];
 
   const data = rawData.map((d, i) => ({
     name: d.label,
@@ -267,17 +254,7 @@ const renderWordCloud = () => {
   if (!wordRef.value) return
   if (!wordChart) wordChart = echarts.init(wordRef.value)
 
-  const rawData = props.dashboardData?.hotQuestionKeywords?.length ?
-    props.dashboardData.hotQuestionKeywords :
-    [
-      { text: 'SpringAI', value: 120 }, { text: 'RAG', value: 95 },
-      { text: '大模型微调', value: 80 }, { text: '知识库隔离', value: 75 },
-      { text: '权限管理', value: 60 }, { text: '向量检索', value: 55 },
-      { text: '答辩技巧', value: 45 }, { text: 'Java', value: 40 },
-      { text: 'Vue3', value: 38 }, { text: 'ElementPlus', value: 30 },
-      { text: 'Milvus', value: 25 }, { text: 'Prompt提示词', value: 22 },
-      { text: '企业微信', value: 20 }, { text: '飞书接入', value: 18 }
-    ];
+  const rawData = props.dashboardData?.hotQuestionKeywords || [];
 
   const data = rawData.map(d => ({
     name: d.text,
