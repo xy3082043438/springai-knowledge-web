@@ -19,6 +19,8 @@ export interface UserResponse {
     username: string
     role: string
     avatar?: string
+    enabled?: boolean
+    permissions?: string[]
     createdAt: string
     updatedAt: string
 }
@@ -32,6 +34,7 @@ export interface UserCreateRequest {
 export interface UserUpdateRequest {
     username?: string
     role?: string
+    enabled?: boolean
 }
 
 export interface MeUpdateRequest {
@@ -50,8 +53,9 @@ export type Permission =
     | 'ROLE_READ' | 'ROLE_WRITE'
     | 'DOC_READ' | 'DOC_WRITE'
     | 'CONFIG_READ' | 'CONFIG_WRITE'
-    | 'LOG_READ' | 'LOG_WRITE'
+    | 'LOG_READ' | 'LOG_WRITE' | 'LOG_EXPORT'
     | 'FEEDBACK_READ' | 'FEEDBACK_WRITE'
+    | 'DASHBOARD_READ' | 'QA_READ'
 
 export interface RoleResponse {
     id: number
@@ -151,6 +155,7 @@ export interface DocumentChunkPreviewResponse {
 /* ============  QA  ============ */
 export interface QaRequest {
     question: string
+    sessionId?: number
 }
 
 export interface QaResponse {
@@ -158,6 +163,7 @@ export interface QaResponse {
     documents?: DocumentResponse[]
     sources?: QaSourceResponse[]
     qaLogId?: number
+    sessionId?: number
 }
 
 export interface QaSourceResponse {

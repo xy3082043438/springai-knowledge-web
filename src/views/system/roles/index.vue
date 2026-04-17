@@ -82,8 +82,12 @@
               :style="{ '--group-accent': group.accent }"
             >
               <div class="perm-group-head">
-                <span class="perm-group-dot" :style="{ background: group.accent }"></span>
-                <span class="perm-group-label">{{ group.label }}</span>
+                <div class="perm-group-title">
+                  <el-icon class="group-icon" :style="{ color: group.accent }">
+                    <component :is="group.icon" />
+                  </el-icon>
+                  <span class="perm-group-label">{{ group.label }}</span>
+                </div>
                 <el-checkbox
                   :model-value="isGroupAllChecked(group)"
                   :indeterminate="isGroupIndeterminate(group)"
@@ -92,20 +96,22 @@
                 >全选</el-checkbox>
               </div>
               <div class="perm-group-body">
-                <label
+                <div
                   v-for="perm in group.permissions"
                   :key="perm.code"
-                  class="perm-item"
+                  class="perm-compact-item"
+                  :class="{ active: roleForm.permissions.includes(perm.code) }"
+                  @click="togglePerm(perm.code, !roleForm.permissions.includes(perm.code))"
                 >
                   <el-checkbox
                     :model-value="roleForm.permissions.includes(perm.code)"
+                    @click.stop
                     @change="(val: boolean) => togglePerm(perm.code, val)"
                   />
-                  <div class="perm-item-info">
+                  <el-tooltip :content="perm.description" placement="top" :show-after="500">
                     <span class="perm-item-label">{{ perm.label }}</span>
-                    <span class="perm-item-desc">{{ perm.description }}</span>
-                  </div>
-                </label>
+                  </el-tooltip>
+                </div>
               </div>
             </div>
           </div>
@@ -294,33 +300,35 @@ const saveRole = async () => {
 
 <style scoped>
 .role-container {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 16px;
-  border: 1px solid #e8edf5;
-  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #f0f2f5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .page-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .page-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
 }
 
 .page-subtitle {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #8c8c8c;
   margin-top: 4px;
 }
 
@@ -333,105 +341,120 @@ const saveRole = async () => {
 .perm-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: 4px;
 }
 
 .no-perm {
-  color: #c0c4cc;
+  color: #bfbfbf;
   font-size: 12px;
+  font-style: italic;
 }
 
-/* ----- Permission Dialog ----- */
+/* ----- Permission Dialog Redesign ----- */
 .perm-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 16px;
   width: 100%;
 }
 
 .perm-group-card {
-  border-radius: 14px;
-  border: 1px solid #e8edf5;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 16px;
   overflow: hidden;
-  background: #fafbfd;
-  transition: box-shadow 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .perm-group-card:hover {
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  border-color: var(--group-accent);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
 }
 
 .perm-group-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
-  border-bottom: 1px solid #eef2f7;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  border-top: 3px solid var(--group-accent);
 }
 
-.perm-group-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.perm-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.group-icon {
+  font-size: 18px;
 }
 
 .perm-group-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1f2a37;
-  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: #262626;
 }
 
 .perm-group-check-all {
-  font-size: 12px;
+  margin: 0;
+  height: auto;
 }
 
 .perm-group-body {
-  padding: 10px 14px;
+  padding: 8px 12px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.perm-item {
-  display: flex;
-  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 8px;
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 8px;
-  transition: background 0.15s;
 }
 
-.perm-item:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.perm-item-info {
+.perm-compact-item {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.perm-compact-item:hover {
+  background: #f0f0f0;
+  border-color: var(--group-accent);
+}
+
+.perm-compact-item.active {
+  background: color-mix(in srgb, var(--group-accent), transparent 92%);
+  border-color: var(--group-accent);
+  color: var(--group-accent);
 }
 
 .perm-item-label {
   font-size: 13px;
   font-weight: 500;
-  color: #1f2a37;
-}
-
-.perm-item-desc {
-  font-size: 11px;
-  color: #9ca3af;
-  line-height: 1.4;
+  color: #262626;
+  white-space: nowrap;
 }
 
 .field-hint {
   font-size: 12px;
-  color: #e6a23c;
-  margin-top: 4px;
+  color: #faad14;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (max-width: 640px) {
+  .perm-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {

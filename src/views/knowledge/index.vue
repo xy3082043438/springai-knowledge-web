@@ -467,6 +467,7 @@ const getContentTypeLabel = (row: DocumentSummaryResponse) => {
   return extension ? extension.toUpperCase() : '-'
 }
 
+const getStatusType = (status: string) => {
   switch (status) {
     case 'READY': return 'success'
     case 'UPLOADED': return 'info'

@@ -49,15 +49,26 @@
             <div class="title-sub">基于 SpringAI 与 RAG 架构的企业级应用</div>
           </div>
           <div class="right-menu">
-            <el-dropdown>
+            <el-dropdown trigger="click">
               <span class="el-dropdown-link">
-                {{ displayName }}
+                <el-avatar 
+                  :size="28" 
+                  :src="userStore.userInfo?.avatar" 
+                  class="header-avatar"
+                >
+                  {{ userStore.userInfo?.username?.charAt(0).toUpperCase() }}
+                </el-avatar>
+                <span class="user-name">{{ displayName }}</span>
                 <el-icon class="el-icon--right"><arrow-down /></el-icon>
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item @click="router.push('/profile')">个人信息</el-dropdown-item>
-                  <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
+                  <el-dropdown-item @click="router.push('/profile')">
+                    <el-icon><User /></el-icon>个人信息
+                  </el-dropdown-item>
+                  <el-dropdown-item divided @click="handleLogout">
+                    <el-icon><SwitchButton /></el-icon>退出登录
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -90,6 +101,7 @@ import {
   Expand,
   Fold,
   ArrowDown,
+  SwitchButton,
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
 import { ADMIN_ROLE, hasAnyRole } from '@/utils/access'
@@ -249,6 +261,35 @@ onMounted(async () => {
 
 .right-menu {
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.right-menu:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.el-dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  outline: none;
+}
+
+.header-avatar {
+  background: #409EFF;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
 }
 
 .app-main {

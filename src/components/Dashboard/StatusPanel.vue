@@ -1,5 +1,5 @@
 <template>
-  <article class="panel panel-status">
+  <article class="panel panel-status animate-rise-in">
     <div class="panel-header">
       <div>
         <div class="panel-kicker">索引健康</div>
@@ -72,7 +72,7 @@ const donutStyle = computed(() => {
   border-radius: 20px;
   border: 1px solid #e6edf7;
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
-  animation: riseIn 0.55s ease both;
+  animation-delay: 0.25s;
 }
 
 .panel::before {
@@ -218,10 +218,6 @@ const donutStyle = computed(() => {
   color: #10233f;
 }
 
-@keyframes riseIn {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 @media (max-width: 1100px) {
   .status-layout {

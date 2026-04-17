@@ -1,5 +1,5 @@
 <template>
-  <article class="panel" :class="panelClass">
+  <article class="panel animate-rise-in" :class="panelClass">
     <div class="panel-header">
       <div>
         <div class="panel-kicker">{{ kicker }}</div>
@@ -53,7 +53,7 @@ defineProps<{
   border: 1px solid #e6edf7;
   background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
-  animation: riseIn 0.55s ease both;
+  animation-delay: 0.25s;
 }
 
 .panel::before {
@@ -172,10 +172,6 @@ defineProps<{
   padding: 24px;
 }
 
-@keyframes riseIn {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 @media (max-width: 640px) {
   .panel { padding: 18px; }

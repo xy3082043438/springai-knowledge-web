@@ -1,5 +1,5 @@
 <template>
-  <section class="echarts-section">
+  <section class="echarts-section animate-rise-in">
     <div class="echarts-grid">
       <!-- 每日问答趋势 -->
       <article class="chart-panel chart-panel-trend">
@@ -345,8 +345,7 @@ onUnmounted(() => {
 
 <style scoped>
 .echarts-section {
-  animation: riseIn 0.55s ease both;
-  animation-delay: 0.2s;
+  animation-delay: 0.35s;
 }
 
 .echarts-grid {
@@ -486,10 +485,6 @@ onUnmounted(() => {
   line-height: 1.5;
 }
 
-@keyframes riseIn {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 @media (max-width: 640px) {
   .chart-panel { padding: 16px; }

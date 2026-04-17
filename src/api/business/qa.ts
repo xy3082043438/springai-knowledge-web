@@ -5,6 +5,10 @@ export function ask(data: QaRequest) {
     return request.post<QaResponse>('/api/qa', data)
 }
 
+export function getSuggestions() {
+    return request.get<string[]>('/api/qa/suggestions')
+}
+
 export async function askStream(
     data: QaRequest,
     onMessage: (chunk: QaResponse) => void,

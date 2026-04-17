@@ -12,16 +12,16 @@
           <span class="logo-text">SpringAI Knowledge</span>
         </div>
         <div class="hero-text">
-          <h1>智能知识，<br />赋能企业智慧。</h1>
-          <p>
-            基于 SpringAI 构建的下一代企业级知识库系统，<br />
-            为您的团队提供精准、高效、安全的智能检索与归纳体验。
+          <h1>基于 SpringAI 的<br />企业级知识库智能问答系统</h1>
+           <p>
+            集成 RAG 架构与多模态数据处理的双语知识问答平台，<br />
+            实现企业私有领域知识的高效检索与智能归纳。
           </p>
         </div>
         <div class="feature-tags">
-          <span class="tag"><el-icon><Monitor /></el-icon> 实时增强检索</span>
-          <span class="tag"><el-icon><Lock /></el-icon> 安全权限管控</span>
-          <span class="tag"><el-icon><MagicStick /></el-icon> 智能语义解析</span>
+          <span class="tag"><el-icon><Monitor /></el-icon> RAG 增强检索</span>
+          <span class="tag"><el-icon><Lock /></el-icon> 细粒度访问控制</span>
+          <span class="tag"><el-icon><MagicStick /></el-icon> 语义特征提取</span>
         </div>
       </div>
     </div>
@@ -32,7 +32,7 @@
         <el-card class="login-card">
           <div class="card-header">
             <h2>欢迎回来</h2>
-            <p>请登录以访问您的智能知识助手</p>
+            <p>身份认证：请登录以进入系统后台</p>
           </div>
 
           <el-form :model="loginForm" :rules="rules" ref="loginFormRef" label-position="top">
@@ -95,7 +95,7 @@
           </el-form>
 
           <div class="copyright">
-            © 2026 基于SpringAI的企业知识库系统
+            © 2026 毕业设计：基于SpringAI的知识库智能问答助手
           </div>
         </el-card>
       </div>

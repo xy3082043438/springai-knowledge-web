@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container" v-loading="loading">
+  <div class="dashboard-container" v-loading="loading" :key="lastUpdatedAt">
     <DashboardHero
       :doc-count="stats.docCount"
       :qa-count="stats.qaCount"
@@ -28,8 +28,8 @@
 
       <DistributionPanel
         v-if="showAdminMetrics"
-        kicker="角色结构"
-        title="用户角色分布"
+        kicker="权限体系"
+        title="用户权限角色分布"
         subtitle="按角色查看当前系统用户结构"
         panel-class="panel-roles"
         empty-text="暂无用户角色数据"
@@ -228,7 +228,7 @@ const lastUpdatedText = computed(() => (lastUpdatedAt.value ? formatDateTimeLabe
 const metricCards = computed<MetricCard[]>(() => {
   const cards: MetricCard[] = [
     {
-      label: '文档总数',
+      label: '知识资产规模',
       value: stats.docCount,
       note: `${readyCount.value} 已索引 / ${failedCount.value} 异常`,
       color: '#2563eb',
@@ -236,7 +236,7 @@ const metricCards = computed<MetricCard[]>(() => {
       icon: metricIconMap.docs,
     },
     {
-      label: '问答总数',
+      label: '问答交互统计',
       value: stats.qaCount,
       note: `最近 7 天 ${qaTrendTotal.value} 次`,
       color: '#0f766e',
@@ -244,7 +244,7 @@ const metricCards = computed<MetricCard[]>(() => {
       icon: metricIconMap.qa,
     },
     {
-      label: '系统用户',
+      label: '系统成员架构',
       value: stats.userCount,
       note: `${roleDistributionItems.value.length} 类角色`,
       color: '#f97316',

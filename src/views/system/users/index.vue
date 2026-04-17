@@ -6,7 +6,7 @@
         <div class="page-subtitle">管理系统账号与角色权限</div>
       </div>
       <div class="page-actions">
-        <el-button type="primary" icon="Plus" @click="handleAdd">添加用户</el-button>
+        <el-button type="primary" icon="Plus" @click="handleAdd" :disabled="!canWrite">添加用户</el-button>
       </div>
     </div>
 
@@ -21,6 +21,7 @@
         <template #default="{ row }">
           <el-switch
             v-model="row.enabled"
+            :disabled="!canWrite || row.username === 'admin'"
             @change="(val) => handleStatusChange(row, val as boolean)"
           />
         </template>
@@ -33,8 +34,8 @@
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template #default="{ row }">
-          <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-          <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+          <el-button link type="primary" size="small" @click="handleEdit(row)" :disabled="!canWrite">编辑</el-button>
+          <el-button link type="danger" size="small" @click="handleDelete(row)" :disabled="!canWrite || row.id === userStore.userInfo?.id">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -63,18 +64,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { listUsers, createUser, updateUser, deleteUser } from '@/api/system/user'
 import { listRoles } from '@/api/system/role'
 import { formatDateTime } from '@/utils/date'
+import { useUserStore } from '@/store/user'
+import { isAdminRole } from '@/utils/access'
 import type { UserResponse, RoleResponse } from '@/types/api'
 
+const userStore = useUserStore()
 const loading = ref(false)
 const saving = ref(false)
 const dialogVisible = ref(false)
+
+const canWrite = computed(() => {
+  return isAdminRole(userStore.userInfo?.role) || userStore.userInfo?.permissions?.includes('USER_WRITE')
+})
 const dialogType = ref<'add' | 'edit'>('add')
 const formRef = ref<FormInstance>()
 const router = useRouter()

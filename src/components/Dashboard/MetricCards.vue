@@ -3,7 +3,7 @@
     <article
       v-for="card in cards"
       :key="card.label"
-      class="metric-card"
+      class="metric-card animate-rise-in"
       :style="{ '--metric-accent': card.color, '--metric-soft': card.softColor }"
     >
       <div class="metric-card-top">
@@ -50,7 +50,6 @@ defineProps<{ cards: MetricCard[] }>()
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96)),
     linear-gradient(135deg, var(--metric-soft), rgba(255, 255, 255, 0));
   box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
-  animation: riseIn 0.5s ease both;
 }
 
 .metric-card::before {
@@ -115,13 +114,8 @@ defineProps<{ cards: MetricCard[] }>()
   font-size: 12px;
 }
 
-.metric-card:nth-child(1) { animation-delay: 0.04s; }
-.metric-card:nth-child(2) { animation-delay: 0.08s; }
-.metric-card:nth-child(3) { animation-delay: 0.12s; }
-.metric-card:nth-child(4) { animation-delay: 0.16s; }
-
-@keyframes riseIn {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.metric-card:nth-child(1) { animation-delay: 0.05s; }
+.metric-card:nth-child(2) { animation-delay: 0.1s; }
+.metric-card:nth-child(3) { animation-delay: 0.15s; }
+.metric-card:nth-child(4) { animation-delay: 0.2s; }
 </style>

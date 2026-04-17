@@ -1,54 +1,57 @@
 <template>
   <div class="profile-container">
-    <el-row :gutter="24">
-      <!-- 左侧：用户基本信息卡片 -->
-      <el-col :span="8" :xs="24">
-        <el-card shadow="hover" class="user-profile-card" :body-style="{ padding: '0px' }">
-          <div class="card-header-bg">
-            <div class="actions">
-              <el-button color="#ffffff20" class="action-btn" size="small" @click="showPasswordDialog = true" plain>
-                修改密码
-              </el-button>
-            </div>
+    <el-card shadow="hover" class="unified-profile-card" :body-style="{ padding: '0px' }">
+      <!-- Top Hero Section -->
+      <div class="card-header-bg">
+        <div class="actions">
+          <el-button color="#ffffff20" class="action-btn" size="small" @click="showPasswordDialog = true" plain>
+            修改密码
+          </el-button>
+        </div>
+      </div>
+
+      <div class="profile-main">
+        <!-- Basic Info Group -->
+        <div class="profile-hero">
+          <div class="avatar-wrapper" @click="showAvatarDialog = true">
+            <img v-if="userInfo?.avatar" :src="userInfo.avatar" class="avatar-img" />
+            <div v-else class="avatar">{{ avatarChar }}</div>
+            <div class="avatar-mask"><el-icon><Edit /></el-icon></div>
           </div>
-          <div class="profile-avatar-group">
-            <div class="avatar-wrapper" @click="showAvatarDialog = true">
-              <img v-if="userInfo?.avatar" :src="userInfo.avatar" class="avatar-img" />
-              <div v-else class="avatar">{{ avatarChar }}</div>
-              <div class="avatar-mask"><el-icon><Edit /></el-icon></div>
-            </div>
-            <h2 class="username">{{ userInfo?.username }}</h2>
-            <div class="role-tag">
-              <el-tag :type="userInfo?.role === 'ADMIN' ? 'danger' : 'primary'" effect="dark" round>
-                {{ userInfo?.role }}
-              </el-tag>
-            </div>
+          <h2 class="username">{{ userInfo?.username }}</h2>
+          <div class="role-tag">
+            <el-tag :type="userInfo?.role === 'ADMIN' ? 'danger' : 'primary'" effect="dark" round>
+              {{ userInfo?.role }}
+            </el-tag>
           </div>
+
           <div class="profile-stats">
             <div class="stat-item">
-              <div class="stat-value">1</div>
-              <div class="stat-label">关联角色</div>
+              <div class="stat-icon-box"><el-icon><Lock /></el-icon></div>
+              <div class="stat-content">
+                <div class="stat-value">{{ userInfo?.permissions?.length || 0 }}</div>
+                <div class="stat-label">权限项</div>
+              </div>
             </div>
             <div class="stat-item">
-              <div class="stat-value">正常</div>
-              <div class="stat-label">账号状态</div>
+              <div class="stat-icon-box success"><el-icon><Finished /></el-icon></div>
+              <div class="stat-content">
+                <div class="stat-value">正常</div>
+                <div class="stat-label">账号状态</div>
+              </div>
             </div>
           </div>
-        </el-card>
-      </el-col>
+        </div>
 
-      <!-- 右侧：账户详细资料 -->
-      <el-col :span="16" :xs="24">
-        <el-card shadow="hover" class="user-detail-card">
-          <template #header>
-            <div class="detail-header">
-              <span class="title">账户详细资料</span>
-            </div>
-          </template>
-          
-          <div class="detail-content">
-            <el-descriptions :column="1" border size="large">
-              <el-descriptions-item>
+        <div class="glass-section-wrap">
+          <el-divider>
+            <el-icon><InfoFilled /></el-icon> 账户核心数据
+          </el-divider>
+
+          <!-- Detailed Info Group -->
+          <div class="detail-section glass-card">
+            <el-descriptions :column="1" border size="large" class="profile-desc">
+              <el-descriptions-item label-class-name="desc-label-cell">
                 <template #label>
                   <div class="desc-label">
                     <el-icon><User /></el-icon>
@@ -57,8 +60,8 @@
                 </template>
                 <span class="desc-value">{{ userInfo?.username }}</span>
               </el-descriptions-item>
-              
-              <el-descriptions-item>
+
+              <el-descriptions-item label-class-name="desc-label-cell">
                 <template #label>
                   <div class="desc-label">
                     <el-icon><Calendar /></el-icon>
@@ -68,7 +71,7 @@
                 <span class="desc-value">{{ formatDateTime(userInfo?.createdAt) }}</span>
               </el-descriptions-item>
 
-              <el-descriptions-item>
+              <el-descriptions-item label-class-name="desc-label-cell">
                 <template #label>
                   <div class="desc-label">
                     <el-icon><Clock /></el-icon>
@@ -79,9 +82,9 @@
               </el-descriptions-item>
             </el-descriptions>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </div>
+    </el-card>
 
     <!-- 修改头像对话框 -->
     <el-dialog v-model="showAvatarDialog" title="修改头像" width="400px" center>
@@ -133,7 +136,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Calendar, Clock, User, Plus, Edit } from '@element-plus/icons-vue'
+import { Calendar, Clock, User, Plus, Edit, InfoFilled, Lock, Finished } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
 import { formatDateTime } from '@/utils/date'
 import { useRouter } from 'vue-router'
@@ -262,50 +265,76 @@ const submitPassword = async () => {
   padding: 24px;
 }
 
-.user-profile-card {
-  border-radius: 8px;
-  border: none;
-  margin-bottom: 24px;
+.unified-profile-card {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px -10px rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
 }
 
 .card-header-bg {
-  height: 120px;
-  background: linear-gradient(135deg, #1e3a5f 0%, #2d8cff 100%);
+  height: 180px;
+  background: 
+    linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(45, 140, 255, 0.8) 100%),
+    radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 40%),
+    url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djJIMjh2LTJoOHptMCA4djJIMjh2LTJoOHptLTEwLTh2MkgxOHYtMmg4em0wIDh2MkgxOHYtMmg4em0tMTAtOHYySDEydi0yaDh6bTAgOHYySDEydi0yaDh6TTM2IDZ2Mkg2VjZoMzB6bTAgOHYySDZ2LTJoMzB6bTAgOHYySDZ2LTJoMzB6bTI0IDB2MmgtMzB2LTJoMzB6bTAgOHYySDEydi0yaDMwem0wIDh2MkgyOHYtMmg4em0wIDh2MkgyOHYtMmg4eiIvPjwvZz48L2c+PC9zdmc+');
   position: relative;
 }
 
 .actions {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 24px;
+  right: 24px;
 }
 
 .action-btn {
   color: #fff !important;
-  border-color: rgba(255, 255, 255, 0.6) !important;
-  background: rgba(0, 0, 0, 0.15) !important;
-  font-weight: 500;
-}
-.action-btn:hover {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border-color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
-.profile-avatar-group {
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.profile-main {
+  padding: 0 48px 48px;
+}
+
+.profile-hero {
   position: relative;
   text-align: center;
-  padding: 0 20px 20px;
-  margin-top: -40px;
-  border-bottom: 1px solid #f0f2f5;
+  margin-top: -70px;
+  margin-bottom: 40px;
 }
 
 .avatar-wrapper {
   margin: 0 auto;
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   position: relative;
   cursor: pointer;
+  border: 4px solid #fff;
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.avatar-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
 }
 
 .avatar-wrapper:hover .avatar-mask {
@@ -317,162 +346,211 @@ const submitPassword = async () => {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .avatar {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: #ffffff;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  font-weight: 700;
-  color: #2d8cff;
+  font-size: 56px;
+  font-weight: 800;
+  color: #2563eb;
 }
 
 .avatar-mask {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 32px;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: all 0.3s ease;
 }
 
 .username {
-  margin: 16px 0 8px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #1f2a37;
+  margin: 20px 0 10px;
+  font-size: 30px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
 }
 
 .role-tag {
-  margin-bottom: 8px;
+  margin-bottom: 28px;
 }
 
 .profile-stats {
   display: flex;
-  padding: 20px 0;
+  justify-content: center;
+  max-width: 500px;
+  margin: 0 auto;
+  gap: 40px;
 }
 
 .stat-item {
-  flex: 1;
-  text-align: center;
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  transition: all 0.3s ease;
 }
 
-.stat-item:first-child::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 24px;
-  width: 1px;
-  background-color: #f0f2f5;
+.stat-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  border-color: #3b82f6;
+}
+
+.stat-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.stat-icon-box.success {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.stat-content {
+  text-align: left;
 }
 
 .stat-value {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2a37;
-  margin-bottom: 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.2;
 }
 
 .stat-label {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.user-detail-card {
-  border-radius: 8px;
-  border: none;
-  height: 100%;
-}
-
-.detail-header {
-  display: flex;
-  align-items: center;
-}
-
-.detail-header .title {
-  font-size: 16px;
+  font-size: 12px;
+  color: #64748b;
   font-weight: 600;
-  color: #1f2a37;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.detail-content {
-  padding: 10px 0;
+.glass-section-wrap {
+  margin-top: 20px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%);
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+}
+
+.detail-section {
+  padding: 16px;
+}
+
+.glass-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.profile-desc {
+  border-radius: 0;
+}
+
+:deep(.desc-label-cell) {
+  background: #f8fafc !important;
+  width: 15vw;
+  min-width: 140px;
 }
 
 .desc-label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 120px;
-  color: #6b7280;
+  gap: 12px;
+  color: #334155;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .desc-value {
-  color: #1f2a37;
-  font-weight: 500;
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
 }
 
-:deep(.el-descriptions__body .el-descriptions__table.is-bordered) {
-  border-color: #f0f2f5;
+.desc-value-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-:deep(.el-descriptions__body .el-descriptions__table.is-bordered .el-descriptions__cell) {
-  border-color: #f0f2f5;
+
+.update-tag {
+  font-weight: 600;
+}
+
+:deep(.el-divider__text) {
+  background-color: transparent;
+  color: #475569;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  gap: 8px;
+  display: flex;
+  align-items: center;
 }
 
 .avatar-uploader-container {
   display: flex;
   justify-content: center;
-  padding: 20px 0;
+  padding: 30px 0;
 }
 
 .avatar-uploader :deep(.el-upload) {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 50%;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
-
-.avatar-uploader :deep(.el-upload:hover) {
-  border-color: var(--el-color-primary);
-}
-
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 120px;
-  height: 120px;
-  text-align: center;
+  transition: all 0.3s;
+  width: 160px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.avatar-uploader :deep(.el-upload:hover) {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.avatar-uploader-icon {
+  font-size: 32px;
+  color: #94a3b8;
+}
+
 .uploaded-avatar {
-  width: 120px;
-  height: 120px;
-  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
+
 </style>

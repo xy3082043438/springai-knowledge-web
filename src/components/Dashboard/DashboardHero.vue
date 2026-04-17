@@ -1,8 +1,8 @@
 <template>
-  <div class="dashboard-header">
+  <div class="dashboard-header animate-rise-in">
     <div class="header-main">
-      <h1 class="header-title">企业知识库智能问答助手</h1>
-      <p class="header-subtitle">沉淀知识资产、观察使用趋势、快速识别系统状态与知识覆盖情况</p>
+      <h1 class="header-title">知识库智能助手 · 运行概览</h1>
+      <p class="header-subtitle">系统指标监控：实时观察知识资产分布、问答交互频次及服务运行状态。</p>
     </div>
     <div class="header-actions">
       <el-tag :type="healthTagType" effect="light" class="health-tag">
@@ -54,7 +54,6 @@ const healthText = computed(() =>
   border-radius: 16px;
   border: 1px solid #e7ecf5;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
-  animation: riseIn 0.5s ease both;
 }
 
 .header-title {
@@ -84,11 +83,6 @@ const healthText = computed(() =>
 .update-time {
   font-size: 12px;
   color: #94a3b8;
-}
-
-@keyframes riseIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 768px) {
