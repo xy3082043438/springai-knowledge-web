@@ -32,7 +32,7 @@
         <el-card class="login-card">
           <div class="card-header">
             <h2>欢迎回来</h2>
-            <p>身份认证：请登录以进入系统后台</p>
+            <p>基于身份验证，开启您的企业级知识协作</p>
           </div>
 
           <el-form :model="loginForm" :rules="rules" ref="loginFormRef" label-position="top">
@@ -95,7 +95,7 @@
           </el-form>
 
           <div class="copyright">
-            © 2026 毕业设计：基于SpringAI的知识库智能问答助手
+            © 2026 基于SpringAI的知识库智能问答助手
           </div>
         </el-card>
       </div>
