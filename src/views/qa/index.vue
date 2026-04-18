@@ -122,11 +122,6 @@
                 >
                   {{ q }}
                 </div>
-                <!-- 兜底显示 -->
-                <template v-if="suggestedQuestions.length === 0">
-                  <div class="suggest-chip" @click="inputMessage = '本项目的技术栈是什么？'">技术栈是什么？</div>
-                  <div class="suggest-chip" @click="inputMessage = '系统包含哪些管理模块？'">有哪些管理模块？</div>
-                </template>
               </div>
             </div>
           </div>
