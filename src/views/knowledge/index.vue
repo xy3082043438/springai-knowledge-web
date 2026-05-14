@@ -227,7 +227,7 @@ import {
 } from '@/api/business/document'
 import { listRoles } from '@/api/system/role'
 import { useUserStore } from '@/store/user'
-import { isAdminRole } from '@/utils/access'
+import { hasAnyPermission } from '@/utils/access'
 import type { DocumentSummaryResponse, RoleResponse } from '@/types/api'
 
 const supportedFileExtensions = ['pdf', 'docx', 'pptx', 'xlsx', 'txt', 'md', 'markdown', 'html', 'htm', 'csv']
@@ -239,7 +239,7 @@ const searchQuery = ref('')
 const loading = ref(false)
 const documents = ref<DocumentSummaryResponse[]>([])
 const roles = ref<RoleResponse[]>([])
-const canManageKnowledge = computed(() => isAdminRole(userStore.userInfo?.role))
+const canManageKnowledge = computed(() => hasAnyPermission(userStore.userInfo?.permissions, ['DOC_WRITE']))
 
 // Create Text
 const createVisible = ref(false)

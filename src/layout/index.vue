@@ -90,6 +90,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, type Component } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import type { Permission } from '@/types/api'
 import {
   Odometer,
   ChatDotRound,
@@ -104,7 +105,7 @@ import {
   SwitchButton,
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
-import { ADMIN_ROLE, hasAnyRole } from '@/utils/access'
+import { hasAnyPermission } from '@/utils/access'
 
 const route = useRoute()
 const router = useRouter()
@@ -115,31 +116,31 @@ interface MenuItem {
   path: string
   title: string
   icon: Component
-  roles?: string[]
+  permissions?: Permission[]
 }
 
 const menuItems: MenuItem[] = [
-  { path: '/dashboard', title: '仪表盘', icon: Odometer },
-  { path: '/qa', title: '智能问答', icon: ChatDotRound },
-  { path: '/knowledge', title: '知识库管理', icon: Document },
+  { path: '/dashboard', title: '仪表盘', icon: Odometer, permissions: ['DASHBOARD_READ'] },
+  { path: '/qa', title: '智能问答', icon: ChatDotRound, permissions: ['QA_READ'] },
+  { path: '/knowledge', title: '知识库管理', icon: Document, permissions: ['DOC_READ'] },
 ]
 
 const systemMenuItems: MenuItem[] = [
-  { path: '/users', title: '用户管理', icon: User, roles: [ADMIN_ROLE] },
-  { path: '/roles', title: '角色管理', icon: Lock, roles: [ADMIN_ROLE] },
-  { path: '/system', title: '系统配置', icon: Setting, roles: [ADMIN_ROLE] },
-  { path: '/logs', title: '日志与反馈', icon: List, roles: [ADMIN_ROLE] },
+  { path: '/users', title: '用户管理', icon: User, permissions: ['USER_READ'] },
+  { path: '/roles', title: '角色管理', icon: Lock, permissions: ['ROLE_READ'] },
+  { path: '/system', title: '系统配置', icon: Setting, permissions: ['CONFIG_READ'] },
+  { path: '/logs', title: '日志与反馈', icon: List, permissions: ['LOG_READ', 'FEEDBACK_READ'] },
 ]
 
 const activeMenu = computed(() => route.path)
 const displayName = computed(() => userStore.userInfo?.username || '用户')
 
 const topLevelMenu = computed(() =>
-  menuItems.filter((item) => hasAnyRole(userStore.userInfo?.role, item.roles))
+  menuItems.filter((item) => hasAnyPermission(userStore.userInfo?.permissions, item.permissions))
 )
 
 const systemMenu = computed(() =>
-  systemMenuItems.filter((item) => hasAnyRole(userStore.userInfo?.role, item.roles))
+  systemMenuItems.filter((item) => hasAnyPermission(userStore.userInfo?.permissions, item.permissions))
 )
 
 const toggleCollapse = () => {

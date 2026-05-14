@@ -1,4 +1,5 @@
 import 'vue-router'
+import type { Permission } from '@/types/api'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -6,6 +7,7 @@ declare module 'vue-router' {
     icon?: string
     hidden?: boolean
     roles?: string[]
+    permissions?: Permission[]
   }
 }
 

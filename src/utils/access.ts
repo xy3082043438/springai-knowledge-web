@@ -1,5 +1,7 @@
 export const ADMIN_ROLE = 'ADMIN'
 
+import type { Permission } from '@/types/api'
+
 export function normalizeRole(role?: string | null) {
   return role?.trim().toUpperCase() || ''
 }
@@ -19,4 +21,17 @@ export function hasAnyRole(currentRole?: string | null, allowedRoles?: readonly 
   }
 
   return allowedRoles.some((role) => normalizeRole(role) === normalizedCurrentRole)
+}
+
+export function hasAnyPermission(currentPermissions?: readonly string[] | null, requiredPermissions?: readonly Permission[]) {
+  if (!requiredPermissions || requiredPermissions.length === 0) {
+    return true
+  }
+
+  if (!currentPermissions || currentPermissions.length === 0) {
+    return false
+  }
+
+  const permissionSet = new Set(currentPermissions)
+  return requiredPermissions.some((permission) => permissionSet.has(permission))
 }

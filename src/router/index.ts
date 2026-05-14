@@ -1,10 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { pinia } from '@/store'
 import { useUserStore } from '@/store/user'
-import { ADMIN_ROLE, hasAnyRole } from '@/utils/access'
+import { hasAnyPermission } from '@/utils/access'
 import Layout from '../layout/index.vue'
-
-const adminOnlyRoles = [ADMIN_ROLE]
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,43 +20,43 @@ const routes: Array<RouteRecordRaw> = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('../views/dashboard/index.vue'),
-        meta: { title: '仪表盘', icon: 'Odometer' }
+        meta: { title: '仪表盘', icon: 'Odometer', permissions: ['DASHBOARD_READ'] }
       },
       {
         path: 'qa',
         name: 'Q&A',
         component: () => import('../views/qa/index.vue'),
-        meta: { title: '智能问答', icon: 'ChatDotRound' }
+        meta: { title: '智能问答', icon: 'ChatDotRound', permissions: ['QA_READ'] }
       },
       {
         path: 'knowledge',
         name: 'KnowledgeBase',
         component: () => import('../views/knowledge/index.vue'),
-        meta: { title: '知识库管理', icon: 'Document' }
+        meta: { title: '知识库管理', icon: 'Document', permissions: ['DOC_READ'] }
       },
       {
         path: 'users',
         name: 'UserManagement',
         component: () => import('../views/system/users/index.vue'),
-        meta: { title: '用户管理', icon: 'User', roles: adminOnlyRoles }
+        meta: { title: '用户管理', icon: 'User', permissions: ['USER_READ'] }
       },
       {
         path: 'roles',
         name: 'RoleManagement',
         component: () => import('../views/system/roles/index.vue'),
-        meta: { title: '角色管理', icon: 'Lock', roles: adminOnlyRoles }
+        meta: { title: '角色管理', icon: 'Lock', permissions: ['ROLE_READ'] }
       },
       {
         path: 'logs',
         name: 'Logs',
         component: () => import('../views/system/logs/index.vue'),
-        meta: { title: '日志与反馈', icon: 'List', roles: adminOnlyRoles }
+        meta: { title: '日志与反馈', icon: 'List', permissions: ['LOG_READ', 'FEEDBACK_READ'] }
       },
       {
         path: 'system',
         name: 'SystemConfig',
         component: () => import('../views/system/config/index.vue'),
-        meta: { title: '系统配置', icon: 'Setting', roles: adminOnlyRoles }
+        meta: { title: '系统配置', icon: 'Setting', permissions: ['CONFIG_READ'] }
       },
       {
         path: 'profile',
@@ -111,7 +109,7 @@ router.beforeEach(async (to) => {
     return '/login'
   }
 
-  if (!hasAnyRole(userStore.userInfo?.role, to.meta.roles)) {
+  if (!hasAnyPermission(userStore.userInfo?.permissions, to.meta.permissions)) {
     if (to.path === '/403') {
       return true
     }
