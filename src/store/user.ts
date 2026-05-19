@@ -4,8 +4,33 @@ import { login as loginApi, logout as logoutApi } from '@/api/auth'
 import { getMe } from '@/api/system/user'
 import type { UserResponse, AuthLoginRequest } from '@/types/api'
 
+const safeGetItem = (key: string): string | null => {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    // 隐私模式或 localStorage 被禁用时降级到内存态
+    return null
+  }
+}
+
+const safeSetItem = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // ignore
+  }
+}
+
+const safeRemoveItem = (key: string) => {
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // ignore
+  }
+}
+
 export const useUserStore = defineStore('user', () => {
-  const token = ref<string | null>(localStorage.getItem('token'))
+  const token = ref<string | null>(safeGetItem('token'))
   const userInfo = ref<UserResponse | null>(null)
   let userInfoPromise: Promise<UserResponse | null> | null = null
 
@@ -13,7 +38,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = null
     userInfo.value = null
     userInfoPromise = null
-    localStorage.removeItem('token')
+    safeRemoveItem('token')
   }
 
   const login = async (loginForm: AuthLoginRequest) => {
@@ -21,7 +46,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = data.token
     userInfo.value = data.user
     userInfoPromise = null
-    localStorage.setItem('token', data.token)
+    safeSetItem('token', data.token)
   }
 
   const fetchUserInfo = async () => {

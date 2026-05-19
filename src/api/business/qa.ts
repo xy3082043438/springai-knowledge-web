@@ -13,9 +13,11 @@ export async function askStream(
     data: QaRequest,
     onMessage: (chunk: QaResponse) => void,
     onComplete: () => void,
-    onError: (err: any) => void
+    onError: (err: any) => void,
+    signal?: AbortSignal
 ) {
     const token = localStorage.getItem('token')
+    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined
     try {
         const response = await fetch('/api/qa/stream', {
             method: 'POST',
@@ -24,13 +26,14 @@ export async function askStream(
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
             body: JSON.stringify(data),
+            signal,
         })
 
         if (!response.ok) {
             throw new Error(`请求失败: ${response.status} ${response.statusText}`)
         }
 
-        const reader = response.body?.getReader()
+        reader = response.body?.getReader()
         if (!reader) {
             throw new Error('无法读取流数据')
         }
@@ -60,7 +63,7 @@ export async function askStream(
                 }
             }
         }
-        
+
         // flush the remaining buffer if it ends gracefully
         if (buffer.trim().startsWith('data:')) {
             const jsonStr = buffer.replace(/^data:/, '').trim()
@@ -71,9 +74,19 @@ export async function askStream(
                 } catch (e) {}
             }
         }
-        
+
         onComplete()
-    } catch (e) {
+    } catch (e: any) {
+        // 用户主动取消(切换会话/卸载组件) 不视为错误
+        if (e?.name === 'AbortError') {
+            return
+        }
         onError(e)
+    } finally {
+        try {
+            await reader?.cancel()
+        } catch {
+            // ignore
+        }
     }
 }

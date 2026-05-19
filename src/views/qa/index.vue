@@ -201,7 +201,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, reactive, onMounted, computed } from 'vue'
+import { ref, nextTick, reactive, onMounted, onUnmounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ChatDotRound, Delete, Plus, Service, User, Top, CaretTop, CaretBottom } from '@element-plus/icons-vue'
 import { askStream, getSuggestions } from '@/api/business/qa'
@@ -233,6 +233,19 @@ const sessions = ref<ChatSession[]>([])
 const currentSessionId = ref<number | null>(null)
 const sessionsLoading = ref(false)
 
+/* 流控制 + 竞态守卫 */
+const streamCtrl = ref<AbortController | null>(null)
+let loadSessionSeq = 0
+
+const abortCurrentStream = () => {
+  streamCtrl.value?.abort()
+  streamCtrl.value = null
+}
+
+onUnmounted(() => {
+  abortCurrentStream()
+})
+
 const currentSessionTitle = computed(() => {
   return sessions.value.find(s => s.id === currentSessionId.value)?.title
 })
@@ -252,29 +265,39 @@ const loadSessionsList = async () => {
 
 const handleSelectSession = async (sessionId: number) => {
   if (currentSessionId.value === sessionId) return
-  
+
+  abortCurrentStream()
+  const seq = ++loadSessionSeq
+
   currentSessionId.value = sessionId
   messages.value = []
   loading.value = true
-  
+
   try {
     const { data } = await listSessionLogs(sessionId)
+    // 竞态守卫: 若已切换到别的会话,丢弃本次结果
+    if (seq !== loadSessionSeq || currentSessionId.value !== sessionId) return
+
     messages.value = data.map(log => [
       { role: 'user', content: log.question },
-      { 
-        role: 'assistant', 
+      {
+        role: 'assistant',
         content: log.answer,
         qaLogId: log.id,
         sources: parseRetrievalSources(log.retrievalJson)
       }
     ]).flat() as Message[]
-    
+
     await nextTick()
     scrollToBottom()
   } catch (err) {
-    ElMessage.error('加载历史记录失败')
+    if (seq === loadSessionSeq) {
+      ElMessage.error('加载历史记录失败')
+    }
   } finally {
-    loading.value = false
+    if (seq === loadSessionSeq) {
+      loading.value = false
+    }
   }
 }
 
@@ -334,6 +357,10 @@ const sendMessage = async () => {
 
   let assistantMsgIndex = -1
 
+  abortCurrentStream()
+  const controller = new AbortController()
+  streamCtrl.value = controller
+
   await askStream(
     { question, sessionId: currentSessionId.value || undefined },
     (chunk) => {
@@ -376,8 +403,13 @@ const sendMessage = async () => {
         messages.value.push({ role: 'assistant', content: displayMsg })
       }
       scrollToBottom()
-    }
+    },
+    controller.signal
   )
+
+  if (streamCtrl.value === controller) {
+    streamCtrl.value = null
+  }
 }
 
 /* ── 引用预览 ── */
@@ -428,9 +460,16 @@ const submitFeedback = async () => {
   }
 }
 
+const escapeHtml = (s: string) =>
+  s.replace(/&/g, '&amp;')
+   .replace(/</g, '&lt;')
+   .replace(/>/g, '&gt;')
+   .replace(/"/g, '&quot;')
+   .replace(/'/g, '&#39;')
+
 const formatMessage = (content: string) => {
   if (!content) return ''
-  return content.replace(/\n/g, '<br>')
+  return escapeHtml(content).replace(/\n/g, '<br>')
 }
 
 /* ── 初始加载 ── */

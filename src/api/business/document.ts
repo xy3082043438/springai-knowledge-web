@@ -9,6 +9,14 @@ import type {
     DocumentChunkPreviewResponse,
 } from '@/types/api'
 
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024 // 50MB,与后端 spring.servlet.multipart 限制一致
+
+function assertSize(file: File) {
+    if (file.size > MAX_UPLOAD_BYTES) {
+        throw new Error(`文件大小超过 ${MAX_UPLOAD_BYTES / 1024 / 1024}MB,请压缩后再试`)
+    }
+}
+
 export function listDocuments() {
     return request.get<DocumentSummaryResponse[]>('/api/documents')
 }
@@ -21,7 +29,13 @@ export function createDocument(data: DocumentCreateRequest) {
     return request.post<DocumentResponse>('/api/documents', data)
 }
 
-export function uploadDocument(file: File, allowedRoles: string[], title?: string) {
+export function uploadDocument(
+    file: File,
+    allowedRoles: string[],
+    title?: string,
+    onProgress?: (percent: number) => void,
+) {
+    assertSize(file)
     const formData = new FormData()
     formData.append('file', file)
     const params: Record<string, any> = { allowedRoles }
@@ -29,10 +43,22 @@ export function uploadDocument(file: File, allowedRoles: string[], title?: strin
     return request.post<DocumentSummaryResponse>('/api/documents/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         params,
+        onUploadProgress: (e) => {
+            if (onProgress && e.total) {
+                onProgress(Math.round((e.loaded / e.total) * 100))
+            }
+        },
     })
 }
 
-export function replaceFile(id: number, file: File, allowedRoles?: string[], title?: string) {
+export function replaceFile(
+    id: number,
+    file: File,
+    allowedRoles?: string[],
+    title?: string,
+    onProgress?: (percent: number) => void,
+) {
+    assertSize(file)
     const formData = new FormData()
     formData.append('file', file)
     const params: Record<string, any> = {}
@@ -41,6 +67,11 @@ export function replaceFile(id: number, file: File, allowedRoles?: string[], tit
     return request.post<DocumentSummaryResponse>(`/api/documents/${id}/file`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         params,
+        onUploadProgress: (e) => {
+            if (onProgress && e.total) {
+                onProgress(Math.round((e.loaded / e.total) * 100))
+            }
+        },
     })
 }
 
