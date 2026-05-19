@@ -108,96 +108,18 @@ npm run build
 
 - 路由遵循后端权限树对应，`src/router/` 中涉及异步路由的部分需与后端约定的角色权限点同步。
 - 业务组件应优先拆解到 `src/components/业务领域/` 下，保持视图层逻辑简洁。
-- Axios 统一拦截报错提醒（通过 Element Plus 取出），针对常规的 401 及权限不足已进行预设捕获，不需在页面端赘述重复逻辑。# 🌐 SpringAI Knowledge Web
+- Axios 统一拦截报错提醒（通过 Element Plus 取出），针对常规的 401 及权限不足已进行预设捕获，不需在页面端赘述重复逻辑。
 
-[![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D.svg)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6.svg)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-7.2-646CFF.svg)](https://vitejs.dev/)
-[![Element Plus](https://img.shields.io/badge/Element%20Plus-2.13-409EFF.svg)](https://element-plus.org/)
+## 🚀 部署到 Vercel
 
-本仓库是 **SpringAI Knowledge** 知识库项目的前端 Web 端，基于 Vue 3 + TypeScript + Vite 构建。提供开箱即用的现代化企业知识库管理与智能问答交互界面。
+本项目通过 Vercel 部署时，由 `vercel.json` 配置 `/api/*` 请求转发到后端服务。为避免后端真实地址被提交到公开仓库，`vercel.json` 不入版本库，而是在构建期由 [scripts/gen-vercel-json.mjs](./scripts/gen-vercel-json.mjs) 基于 [vercel.template.json](./vercel.template.json) 注入环境变量生成。
 
-## ✨ 核心特性
+部署步骤：
 
-- **💬 智能对话交互**：支持基于上下文的流式 (SSE) 问答打字机效果，支持溯源文档的高亮与分段（Chunk）内容预览。
-- **📁 全面文档管理**：可视化上传多格式文件（PDF/Word/Excel 等）或直接录入文本，支持重建向量库索引和单独管理。
-- **📊 数据可视化大盘**：内置基于 ECharts 的仪表盘，实时展示系统问答趋势、知识库占比与高频查询词云。
-- **🛡️ 细粒度权限管控**：完整的 RBAC 模型（用户-角色-权限），支持动态显隐菜单与管控文档可见性范围。
-- **⚙️ 后台系统管理**：可视化调节检索权重、Chunk 大小、大模型 Prompt 和系统运行参数，支持详尽的操作与问答审计日志。
-
-## 🛠️ 技术栈
-
-- **前端框架**: Vue 3.5 (Composition API)
-- **开发语言**: TypeScript 5.7
-- **构建工具**: Vite 7.2
-- **UI 组件库**: Element Plus 2.13
-- **状态管理**: Pinia 3.0
-- **路由控制**: Vue Router 4.6
-- **网络请求**: Axios (集成 401 自动跳转与全局错误处理)
-- **图表渲染**: ECharts 5.6 & ECharts-Wordcloud
-
-## 🚀 快速开始
-
-### 1. 环境准备
-
-请确保本地已安装 Node.js (推荐 `v20.19.0+` 或 `>= v22.12.0`)。
-
-### 2. 安装依赖
-
-```bash
-npm install
-```
-
-### 3. 配置接口代理
-
-开发环境的接口请求默认通过 Vite 代理至本地后端。如需修改目标地址，请在 `vite.config.ts` 中调整：
-```typescript
-proxy: {
-  '/api': {
-    target: 'http://localhost:8080', // 修改为你的后端地址
-    changeOrigin: true
-  }
-}
-```
-
-### 4. 运行项目
-
-```bash
-npm run dev
-```
-项目启动后，浏览器会自动打开或提示访问地址（默认为 `http://localhost:3000`）。
-
-### 5. 生产构建
-
-```bash
-npm run build
-npm run preview   # 在本地预览构建后的产物
-```
-
-## 📂 项目结构简介
-
-```text
-src/
-├── api/          # 后端接口请求定义 (按业务域垂直划分)
-├── assets/       # 静态资源 (图片、Sass 全局变量/混合)
-├── components/   # 全局/局部独立组件 (如图表面板、验证码等)
-├── layout/       # 系统整体布局 (顶栏、侧边栏)
-├── router/       # Vue Router 路由与权限守卫拦截
-├── store/        # Pinia 状态管理 (用户信息、系统状态等)
-├── styles/       # 全局样式配置与覆盖 Element Plus 样式
-├── types/        # TypeScript 全局接口与模型定义
-├── utils/        # 通用工具函数 (时间处理、请求封装、RBAC鉴权等)
-└── views/        # 页面视图层
-    ├── auth/       # 登录鉴权相关页面
-    ├── dashboard/  # 统计大盘
-    ├── knowledge/  # 知识库管理
-    ├── qa/         # 智能问答大厅
-    └── system/     # 系统设置 (用户/角色/配置/日志等)
-```
-
-## 🤝 开发约定
-
-本项目正向着“高可维护、职责单一”的工程化标准持续演进中，后续开发请参考以下原则：
-- **职责拆分**：将复杂的页面逻辑（如数据组装、图表配置等）剥离至 `composables` 或独立的工具函数。
-- **组件复用**：提取通用的布局骨架（如公用表单、弹窗）、列表项等放入 `components` 中。
-- **权限校验**：优先使用中心化封装的权限鉴别方法来控制按钮和组件级别的可见性。
+1. 在 Vercel 项目的 **Settings → Environment Variables** 中新增（注意勾选 **Production**，需要预览部署再勾 Preview）：
+   - `BACKEND_API_URL` = 后端服务根地址（例如 `http://1.2.3.4` 或 `https://api.example.com`，**不要带末尾斜杠**，不要包含 `/api` 路径）。
+2. **Build Command** 使用默认 `npm run build` 即可，构建脚本会自动调用 `gen:vercel` 生成 `vercel.json`。
+3. 本地若需调试生成结果，可执行：
+   ```bash
+   BACKEND_API_URL=http://localhost:8080 npm run gen:vercel
+   ```

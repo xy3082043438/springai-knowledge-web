@@ -3,7 +3,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "http://47.109.80.120/api/$1"
+      "dest": "__BACKEND_API_URL__/api/$1"
     },
     {
       "handle": "filesystem"
@@ -14,4 +14,3 @@
     }
   ]
 }
-

@@ -28,12 +28,12 @@ coverage
 
 .eslintcache
 
-# Cypress
-/cypress/videos/
-/cypress/screenshots/
-
-# Vitest
-__screenshots__/
-
 # Stakpak session files
 .stakpak/session*
+
+# Vercel config is generated at build time from vercel.template.json
+# Real backend URL is injected via BACKEND_API_URL env var (see scripts/gen-vercel-json.mjs)
+vercel.json
+
+# Claude Code local settings
+.claude/
