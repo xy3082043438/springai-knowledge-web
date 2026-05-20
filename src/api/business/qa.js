@@ -5,8 +5,9 @@ export function ask(data) {
 export function getSuggestions() {
     return request.get('/api/qa/suggestions');
 }
-export async function askStream(data, onMessage, onComplete, onError) {
+export async function askStream(data, onMessage, onComplete, onError, signal) {
     const token = localStorage.getItem('token');
+    let reader;
     try {
         const response = await fetch('/api/qa/stream', {
             method: 'POST',
@@ -15,11 +16,12 @@ export async function askStream(data, onMessage, onComplete, onError) {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
             body: JSON.stringify(data),
+            signal,
         });
         if (!response.ok) {
             throw new Error(`请求失败: ${response.status} ${response.statusText}`);
         }
-        const reader = response.body?.getReader();
+        reader = response.body?.getReader();
         if (!reader) {
             throw new Error('无法读取流数据');
         }
@@ -61,7 +63,19 @@ export async function askStream(data, onMessage, onComplete, onError) {
         onComplete();
     }
     catch (e) {
+        // 用户主动取消(切换会话/卸载组件) 不视为错误
+        if (e?.name === 'AbortError') {
+            return;
+        }
         onError(e);
+    }
+    finally {
+        try {
+            await reader?.cancel();
+        }
+        catch {
+            // ignore
+        }
     }
 }
 //# sourceMappingURL=qa.js.map

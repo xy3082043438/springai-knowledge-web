@@ -4,10 +4,15 @@ import { useRoute, useRouter } from 'vue-router';
 import { Odometer, ChatDotRound, Document, User, Lock, List, Setting, Expand, Fold, ArrowDown, SwitchButton, } from '@element-plus/icons-vue';
 import { useUserStore } from '@/store/user';
 import { hasAnyPermission } from '@/utils/access';
+import { useBreakpoint } from '@/composables/useBreakpoint';
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const { isMobile } = useBreakpoint();
 const isCollapse = ref(false);
+// 手机端强制折叠为图标条；桌面端跟随用户手动状态
+const collapsed = computed(() => isMobile.value || isCollapse.value);
+const asideWidth = computed(() => (collapsed.value ? '68px' : '236px'));
 const menuItems = [
     { path: '/dashboard', title: '仪表盘', icon: Odometer, permissions: ['DASHBOARD_READ'] },
     { path: '/qa', title: '智能问答', icon: ChatDotRound, permissions: ['QA_READ'] },
@@ -103,6 +108,13 @@ let __VLS_directives;
 /** @type {__VLS_StyleScopedClasses['el-menu--collapse']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-menu-item']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-sub-menu__title']} */ ;
+/** @type {__VLS_StyleScopedClasses['app-header']} */ ;
+/** @type {__VLS_StyleScopedClasses['fold-btn']} */ ;
+/** @type {__VLS_StyleScopedClasses['header-title']} */ ;
+/** @type {__VLS_StyleScopedClasses['title-main']} */ ;
+/** @type {__VLS_StyleScopedClasses['title-sub']} */ ;
+/** @type {__VLS_StyleScopedClasses['user-name']} */ ;
+/** @type {__VLS_StyleScopedClasses['app-main']} */ ;
 // CSS variable injection 
 // CSS variable injection end 
 const __VLS_0 = {}.ElContainer;
@@ -121,11 +133,11 @@ const __VLS_5 = {}.ElAside;
 // @ts-ignore
 const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({
     ...{ class: "app-aside" },
-    width: (__VLS_ctx.isCollapse ? '68px' : '236px'),
+    width: (__VLS_ctx.asideWidth),
 }));
 const __VLS_7 = __VLS_6({
     ...{ class: "app-aside" },
-    width: (__VLS_ctx.isCollapse ? '68px' : '236px'),
+    width: (__VLS_ctx.asideWidth),
 }, ...__VLS_functionalComponentArgsRest(__VLS_6));
 __VLS_8.slots.default;
 const __VLS_9 = {}.ElMenu;
@@ -134,7 +146,7 @@ const __VLS_9 = {}.ElMenu;
 const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
     defaultActive: (__VLS_ctx.activeMenu),
     ...{ class: "el-menu-vertical" },
-    collapse: (__VLS_ctx.isCollapse),
+    collapse: (__VLS_ctx.collapsed),
     router: true,
     backgroundColor: "#304156",
     textColor: "#bfcbd9",
@@ -143,7 +155,7 @@ const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
 const __VLS_11 = __VLS_10({
     defaultActive: (__VLS_ctx.activeMenu),
     ...{ class: "el-menu-vertical" },
-    collapse: (__VLS_ctx.isCollapse),
+    collapse: (__VLS_ctx.collapsed),
     router: true,
     backgroundColor: "#304156",
     textColor: "#bfcbd9",
@@ -152,7 +164,7 @@ const __VLS_11 = __VLS_10({
 __VLS_12.slots.default;
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
     ...{ class: "logo" },
-    ...{ class: ({ 'logo-collapsed': __VLS_ctx.isCollapse }) },
+    ...{ class: ({ 'logo-collapsed': __VLS_ctx.collapsed }) },
 });
 __VLS_asFunctionalElement(__VLS_intrinsicElements.img)({
     src: "/logo.svg",
@@ -174,7 +186,7 @@ __VLS_16.slots.default;
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
     ...{ class: "logo-text" },
 });
-__VLS_asFunctionalDirective(__VLS_directives.vShow)(null, { ...__VLS_directiveBindingRestFields, value: (!__VLS_ctx.isCollapse) }, null, null);
+__VLS_asFunctionalDirective(__VLS_directives.vShow)(null, { ...__VLS_directiveBindingRestFields, value: (!__VLS_ctx.collapsed) }, null, null);
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
     ...{ class: "logo-title" },
 });
@@ -534,6 +546,8 @@ const __VLS_self = (await import('vue')).defineComponent({
             router: router,
             userStore: userStore,
             isCollapse: isCollapse,
+            collapsed: collapsed,
+            asideWidth: asideWidth,
             activeMenu: activeMenu,
             displayName: displayName,
             topLevelMenu: topLevelMenu,

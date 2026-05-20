@@ -127,6 +127,10 @@ debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
 const __VLS_ctx = {};
 let __VLS_components;
 let __VLS_directives;
+/** @type {__VLS_StyleScopedClasses['user-container']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-header']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-actions']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-title']} */ ;
 // CSS variable injection 
 // CSS variable injection end 
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({

@@ -1,4 +1,10 @@
 import request from '@/utils/request';
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024; // 50MB,与后端 spring.servlet.multipart 限制一致
+function assertSize(file) {
+    if (file.size > MAX_UPLOAD_BYTES) {
+        throw new Error(`文件大小超过 ${MAX_UPLOAD_BYTES / 1024 / 1024}MB,请压缩后再试`);
+    }
+}
 export function listDocuments() {
     return request.get('/api/documents');
 }
@@ -8,7 +14,8 @@ export function getDocument(id) {
 export function createDocument(data) {
     return request.post('/api/documents', data);
 }
-export function uploadDocument(file, allowedRoles, title) {
+export function uploadDocument(file, allowedRoles, title, onProgress) {
+    assertSize(file);
     const formData = new FormData();
     formData.append('file', file);
     const params = { allowedRoles };
@@ -17,9 +24,15 @@ export function uploadDocument(file, allowedRoles, title) {
     return request.post('/api/documents/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         params,
+        onUploadProgress: (e) => {
+            if (onProgress && e.total) {
+                onProgress(Math.round((e.loaded / e.total) * 100));
+            }
+        },
     });
 }
-export function replaceFile(id, file, allowedRoles, title) {
+export function replaceFile(id, file, allowedRoles, title, onProgress) {
+    assertSize(file);
     const formData = new FormData();
     formData.append('file', file);
     const params = {};
@@ -30,6 +43,11 @@ export function replaceFile(id, file, allowedRoles, title) {
     return request.post(`/api/documents/${id}/file`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         params,
+        onUploadProgress: (e) => {
+            if (onProgress && e.total) {
+                onProgress(Math.round((e.loaded / e.total) * 100));
+            }
+        },
     });
 }
 export function updateDocument(id, data) {

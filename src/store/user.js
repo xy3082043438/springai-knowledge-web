@@ -2,22 +2,47 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { login as loginApi, logout as logoutApi } from '@/api/auth';
 import { getMe } from '@/api/system/user';
+const safeGetItem = (key) => {
+    try {
+        return localStorage.getItem(key);
+    }
+    catch {
+        // 隐私模式或 localStorage 被禁用时降级到内存态
+        return null;
+    }
+};
+const safeSetItem = (key, value) => {
+    try {
+        localStorage.setItem(key, value);
+    }
+    catch {
+        // ignore
+    }
+};
+const safeRemoveItem = (key) => {
+    try {
+        localStorage.removeItem(key);
+    }
+    catch {
+        // ignore
+    }
+};
 export const useUserStore = defineStore('user', () => {
-    const token = ref(localStorage.getItem('token'));
+    const token = ref(safeGetItem('token'));
     const userInfo = ref(null);
     let userInfoPromise = null;
     const clearSession = () => {
         token.value = null;
         userInfo.value = null;
         userInfoPromise = null;
-        localStorage.removeItem('token');
+        safeRemoveItem('token');
     };
     const login = async (loginForm) => {
         const { data } = await loginApi(loginForm);
         token.value = data.token;
         userInfo.value = data.user;
         userInfoPromise = null;
-        localStorage.setItem('token', data.token);
+        safeSetItem('token', data.token);
     };
     const fetchUserInfo = async () => {
         const { data } = await getMe();

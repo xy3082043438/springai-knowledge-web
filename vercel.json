@@ -3,7 +3,8 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "__BACKEND_API_URL__/api/$1"
+      "dest": "${BACKEND_API_URL}/api/$1",
+      "env": ["BACKEND_API_URL"]
     },
     {
       "handle": "filesystem"

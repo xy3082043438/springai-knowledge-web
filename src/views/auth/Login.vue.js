@@ -84,6 +84,8 @@ let __VLS_components;
 let __VLS_directives;
 /** @type {__VLS_StyleScopedClasses['visual-section']} */ ;
 /** @type {__VLS_StyleScopedClasses['hero-text']} */ ;
+/** @type {__VLS_StyleScopedClasses['form-section']} */ ;
+/** @type {__VLS_StyleScopedClasses['login-card']} */ ;
 /** @type {__VLS_StyleScopedClasses['card-header']} */ ;
 /** @type {__VLS_StyleScopedClasses['card-header']} */ ;
 /** @type {__VLS_StyleScopedClasses['premium-input']} */ ;

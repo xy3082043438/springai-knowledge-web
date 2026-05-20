@@ -253,6 +253,11 @@ debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
 const __VLS_ctx = {};
 let __VLS_components;
 let __VLS_directives;
+/** @type {__VLS_StyleScopedClasses['knowledge-container']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-header']} */ ;
+/** @type {__VLS_StyleScopedClasses['header-actions']} */ ;
+/** @type {__VLS_StyleScopedClasses['header-actions']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-title']} */ ;
 /** @type {__VLS_StyleScopedClasses['premium-form']} */ ;
 /** @type {__VLS_StyleScopedClasses['premium-input']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-input__wrapper']} */ ;

@@ -69,6 +69,8 @@ function friendlyMessage(raw) {
     // 否则返回 null，让调用方用状态码兜底
     return null;
 }
+// 模块级互斥:防止并发 401 触发多次重定向/重复清理
+let isRedirecting = false;
 // 响应拦截器 — 401 视为会话失效，其他统一友好提示
 request.interceptors.response.use((response) => response, (error) => {
     const status = error.response?.status ?? 0;
@@ -80,11 +82,14 @@ request.interceptors.response.use((response) => response, (error) => {
             ElMessage.error(msg);
             return Promise.reject(error);
         }
-        localStorage.removeItem('token');
-        if (typeof window !== 'undefined') {
-            sessionStorage.setItem('auth_redirect_message', msg);
-            if (window.location.pathname !== '/login') {
-                window.location.replace('/login');
+        if (!isRedirecting) {
+            isRedirecting = true;
+            localStorage.removeItem('token');
+            if (typeof window !== 'undefined') {
+                sessionStorage.setItem('auth_redirect_message', msg);
+                if (window.location.pathname !== '/login') {
+                    window.location.replace('/login');
+                }
             }
         }
     }

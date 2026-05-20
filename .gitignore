@@ -31,9 +31,5 @@ coverage
 # Stakpak session files
 .stakpak/session*
 
-# Vercel config is generated at build time from vercel.template.json
-# Real backend URL is injected via BACKEND_API_URL env var (see scripts/gen-vercel-json.mjs)
-vercel.json
-
 # Claude Code local settings
 .claude/

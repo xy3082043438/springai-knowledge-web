@@ -242,6 +242,7 @@ let __VLS_directives;
 /** @type {__VLS_StyleScopedClasses['chart-panel-trend']} */ ;
 /** @type {__VLS_StyleScopedClasses['chart-panel-pie']} */ ;
 /** @type {__VLS_StyleScopedClasses['chart-panel-cloud']} */ ;
+/** @type {__VLS_StyleScopedClasses['echarts-grid']} */ ;
 /** @type {__VLS_StyleScopedClasses['chart-panel']} */ ;
 /** @type {__VLS_StyleScopedClasses['chart-canvas']} */ ;
 // CSS variable injection 

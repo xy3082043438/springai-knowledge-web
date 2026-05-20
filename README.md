@@ -37,8 +37,6 @@
 ```text
 springai-knowledge-web/
 ├── public/                     # 不参与编译的静态资源
-├── scripts/
-│   └── gen-vercel-json.mjs     # 构建期生成 vercel.json（注入后端地址）
 ├── src/
 │   ├── api/                    # 后端接口封装
 │   │   ├── auth.ts             # 登录 / 认证
@@ -57,7 +55,7 @@ springai-knowledge-web/
 │   └── views/                  # 页面：登录 / 仪表盘 / 问答 / 知识库 / 系统管理 / 个人信息
 ├── index.html                  # HTML 入口
 ├── vite.config.ts              # Vite 构建与开发代理配置
-├── vercel.template.json        # Vercel 配置模板（生成 vercel.json 的来源）
+├── vercel.json                 # Vercel 路由配置（通过环境变量代理后端）
 └── tsconfig.json
 ```
 
@@ -91,23 +89,19 @@ VITE_API_TARGET=http://192.168.1.10:8080 npm run dev
 ## 📦 构建与预览
 
 ```bash
-npm run build     # 生成 vercel.json → 类型检查(vue-tsc) → vite 打包，产物输出至 dist/
+npm run build     # 类型检查(vue-tsc) → vite 打包，产物输出至 dist/
 npm run preview   # 本地预览生产构建产物
 ```
 
-> `build` 首步 `gen:vercel` 需要环境变量 `BACKEND_API_URL`（见下文）。产物为纯静态文件，可由 Nginx 等任意 HTTP Server 承载。
+> 产物为纯静态文件，可由 Nginx 等任意 HTTP Server 承载。
 
 ## ☁️ 部署到 Vercel
 
-为避免后端真实地址进入公开仓库，`vercel.json` **不入版本库**，而是在构建期由 [scripts/gen-vercel-json.mjs](./scripts/gen-vercel-json.mjs) 基于 [vercel.template.json](./vercel.template.json) 注入环境变量生成。
+为避免后端真实地址进入公开仓库，[vercel.json](./vercel.json) 使用 Vercel 官方支持的环境变量展开语法，将 `/api/*` 代理到 `BACKEND_API_URL`。
 
 1. 在 Vercel 项目 **Settings → Environment Variables** 中新增（勾选 **Production**，需预览部署再勾 Preview）：
    - `BACKEND_API_URL` = 后端服务根地址（如 `https://api.example.com`，**不带末尾斜杠**、不含 `/api` 路径）。
-2. **Build Command** 保持默认 `npm run build`，构建时会自动调用 `gen:vercel` 生成 `vercel.json`，将 `/api/*` 转发到后端。
-3. 本地调试生成结果：
-   ```bash
-   BACKEND_API_URL=http://localhost:8080 npm run gen:vercel
-   ```
+2. **Build Command** 保持默认 `npm run build`。Vercel 会根据 `vercel.json` 将 `/api/*` 转发到后端。
 
 ## 🤝 开发约定
 

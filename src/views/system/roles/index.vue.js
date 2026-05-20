@@ -154,7 +154,10 @@ let __VLS_directives;
 /** @type {__VLS_StyleScopedClasses['perm-group-card']} */ ;
 /** @type {__VLS_StyleScopedClasses['perm-compact-item']} */ ;
 /** @type {__VLS_StyleScopedClasses['perm-compact-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['perm-grid']} */ ;
+/** @type {__VLS_StyleScopedClasses['role-container']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-header']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-actions']} */ ;
+/** @type {__VLS_StyleScopedClasses['page-title']} */ ;
 /** @type {__VLS_StyleScopedClasses['perm-grid']} */ ;
 // CSS variable injection 
 // CSS variable injection end 

@@ -128,6 +128,11 @@ let __VLS_directives;
 /** @type {__VLS_StyleScopedClasses['stat-icon-box']} */ ;
 /** @type {__VLS_StyleScopedClasses['avatar-uploader']} */ ;
 /** @type {__VLS_StyleScopedClasses['el-upload']} */ ;
+/** @type {__VLS_StyleScopedClasses['profile-container']} */ ;
+/** @type {__VLS_StyleScopedClasses['username']} */ ;
+/** @type {__VLS_StyleScopedClasses['profile-stats']} */ ;
+/** @type {__VLS_StyleScopedClasses['desc-label-cell']} */ ;
+/** @type {__VLS_StyleScopedClasses['desc-value']} */ ;
 // CSS variable injection 
 // CSS variable injection end 
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
