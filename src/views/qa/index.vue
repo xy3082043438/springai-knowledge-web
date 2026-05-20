@@ -1,7 +1,9 @@
 <template>
   <div class="qa-container">
+    <!-- 手机端侧栏遮罩 -->
+    <div v-if="showSidebar" class="sidebar-backdrop" @click="showSidebar = false"></div>
     <!-- 会话侧边栏 -->
-    <aside class="chat-sidebar">
+    <aside class="chat-sidebar" :class="{ 'mobile-open': showSidebar }">
       <div class="sidebar-header">
         <el-button type="primary" class="new-chat-btn" icon="Plus" @click="handleNewChat">开启新对话</el-button>
       </div>
@@ -43,6 +45,7 @@
     <div class="chat-main">
       <div class="chat-panel">
         <div class="chat-header">
+          <el-button class="sidebar-toggle" :icon="Expand" circle @click="showSidebar = true" />
           <div>
             <div class="chat-title">知识增强对话检索 {{ currentSessionTitle ? `- ${currentSessionTitle}` : '' }}</div>
             <div class="chat-subtitle">基于 RAG (Retrieval-Augmented Generation) 架构的文档增强问答系统</div>
@@ -158,7 +161,7 @@
         v-model="showPreview"
         :title="currentChunk?.title || currentChunk?.fileName"
         direction="rtl"
-        size="450px"
+        :size="isMobile ? '88%' : '450px'"
         custom-class="preview-drawer"
       >
         <div v-if="currentChunk" class="preview-body">
@@ -203,7 +206,8 @@
 <script setup lang="ts">
 import { ref, nextTick, reactive, onMounted, onUnmounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ChatDotRound, Delete, Plus, Service, User, Top, CaretTop, CaretBottom } from '@element-plus/icons-vue'
+import { ChatDotRound, Delete, Plus, Service, User, Top, CaretTop, CaretBottom, Expand } from '@element-plus/icons-vue'
+import { useBreakpoint } from '@/composables/useBreakpoint'
 import { askStream, getSuggestions } from '@/api/business/qa'
 import { createFeedback } from '@/api/business/feedback'
 import { previewChunk } from '@/api/business/document'
@@ -221,6 +225,8 @@ interface Message {
 
 const userStore = useUserStore()
 const messages = ref<Message[]>([])
+const { isMobile } = useBreakpoint()
+const showSidebar = ref(false) // 手机端会话侧栏开合
 const inputMessage = ref('')
 const loading = ref(false)
 const chatHistoryRef = ref<HTMLElement | null>(null)
@@ -264,6 +270,7 @@ const loadSessionsList = async () => {
 }
 
 const handleSelectSession = async (sessionId: number) => {
+  showSidebar.value = false
   if (currentSessionId.value === sessionId) return
 
   abortCurrentStream()
@@ -312,6 +319,7 @@ const parseRetrievalSources = (json: string): QaSourceResponse[] | undefined => 
 }
 
 const handleNewChat = () => {
+  showSidebar.value = false
   currentSessionId.value = null
   messages.value = []
 }
@@ -655,6 +663,16 @@ onMounted(() => {
   font-weight: 500;
 }
 
+/* 会话侧栏触发按钮：仅手机端显示 */
+.sidebar-toggle {
+  display: none;
+  margin-right: 12px;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
 .chat-history {
   flex: 1;
   padding: 24px;
@@ -883,7 +901,55 @@ onMounted(() => {
 }
 
 @media (max-width: 900px) {
-  .chat-sidebar { display: none; }
   .preview-panel { display: none; }
+
+  /* 会话侧栏改为从左滑出的覆盖层 */
+  .chat-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 80%;
+    max-width: 300px;
+    z-index: 2001;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(15, 23, 42, 0.18);
+  }
+  .chat-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 2000;
+  }
+
+  .sidebar-toggle {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 768px) {
+  /* app-main padding 在手机为 12px，修正容器出血量 */
+  .qa-container {
+    width: calc(100% + 24px);
+    margin: -12px;
+  }
+  .chat-header {
+    padding: 12px 14px;
+  }
+  .chat-title {
+    font-size: 15px;
+  }
+  .chat-history {
+    padding: 14px;
+  }
+  .message {
+    max-width: 96%;
+  }
 }
 </style>

@@ -553,4 +553,28 @@ const submitPassword = async () => {
   object-fit: cover;
 }
 
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 12px;
+  }
+  .username {
+    font-size: 24px;
+  }
+  /* 统计项在手机端竖向排列 */
+  .profile-stats {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  /* 描述标签列收窄，值允许换行避免溢出 */
+  :deep(.desc-label-cell) {
+    min-width: 92px;
+    width: 30vw;
+  }
+  .desc-value {
+    white-space: normal;
+    word-break: break-all;
+  }
+}
+
 </style>

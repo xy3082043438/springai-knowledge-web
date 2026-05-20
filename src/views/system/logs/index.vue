@@ -301,5 +301,27 @@ onMounted(() => {
   color: #6b7280;
   margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+  .logs-container {
+    padding: 14px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .header-filter {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+  .pagination {
+    justify-content: center;
+  }
+  .page-title {
+    font-size: 16px;
+  }
+}
 </style>
 

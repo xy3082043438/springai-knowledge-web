@@ -463,6 +463,14 @@ onUnmounted(() => {
 }
 
 
+@media (max-width: 768px) {
+  /* 防止 320px 最小列宽在窄屏溢出 */
+  .echarts-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
 @media (max-width: 640px) {
   .chart-panel { padding: 16px; }
   .chart-canvas { height: 240px; }

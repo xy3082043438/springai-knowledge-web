@@ -232,5 +232,23 @@ const handleStatusChange = async (row: UserResponse, val: boolean) => {
   color: #6b7280;
   margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+  .user-container {
+    padding: 14px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .page-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    font-size: 16px;
+  }
+}
 </style>
 

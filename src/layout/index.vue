@@ -1,19 +1,19 @@
 <template>
   <el-container class="layout-container">
-    <el-aside class="app-aside" :width="isCollapse ? '68px' : '236px'">
+    <el-aside class="app-aside" :width="asideWidth">
       <el-menu
         :default-active="activeMenu"
         class="el-menu-vertical"
-        :collapse="isCollapse"
+        :collapse="collapsed"
         router
         background-color="#304156"
         text-color="#bfcbd9"
         active-text-color="#409EFF"
       >
-        <div class="logo" :class="{ 'logo-collapsed': isCollapse }">
+        <div class="logo" :class="{ 'logo-collapsed': collapsed }">
           <img src="/logo.svg" class="logo-badge" alt="logo" />
           <transition name="logo-fade">
-            <div v-show="!isCollapse" class="logo-text">
+            <div v-show="!collapsed" class="logo-text">
               <div class="logo-title">企业知识库</div>
               <div class="logo-subtitle">基于 SpringAI 架构</div>
             </div>
@@ -106,11 +106,17 @@ import {
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
 import { hasAnyPermission } from '@/utils/access'
+import { useBreakpoint } from '@/composables/useBreakpoint'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const { isMobile } = useBreakpoint()
 const isCollapse = ref(false)
+
+// 手机端强制折叠为图标条；桌面端跟随用户手动状态
+const collapsed = computed(() => isMobile.value || isCollapse.value)
+const asideWidth = computed(() => (collapsed.value ? '68px' : '236px'))
 
 interface MenuItem {
   path: string
@@ -424,5 +430,39 @@ onMounted(async () => {
 :deep(.el-menu-item),
 :deep(.el-sub-menu__title) {
   transition: border-color 0.3s, background-color 0.3s, color 0.3s, padding 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ── 手机端响应式 (≤768px) ── */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 12px;
+  }
+
+  /* 手机端侧边栏强制为图标条，折叠按钮无意义，隐藏 */
+  .fold-btn {
+    display: none;
+  }
+
+  .header-title {
+    margin-left: 0;
+    min-width: 0;
+  }
+
+  .title-main {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 副标题与用户名在窄屏隐藏，仅保留头像 */
+  .title-sub,
+  .user-name {
+    display: none;
+  }
+
+  .app-main {
+    padding: 12px;
+  }
 }
 </style>

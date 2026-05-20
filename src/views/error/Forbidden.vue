@@ -66,4 +66,16 @@ const router = useRouter()
   justify-content: center;
   gap: 12px;
 }
+
+@media (max-width: 480px) {
+  .forbidden-card {
+    padding: 28px 18px;
+  }
+  .status-code {
+    font-size: 44px;
+  }
+  .actions {
+    flex-direction: column;
+  }
+}
 </style>

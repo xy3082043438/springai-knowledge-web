@@ -313,6 +313,15 @@ const handleLogin = async () => {
   padding: 40px;
 }
 
+@media (max-width: 480px) {
+  .form-section {
+    padding: 16px;
+  }
+  .login-card {
+    padding: 12px;
+  }
+}
+
 .form-scroll {
   width: 100%;
   max-width: 440px;

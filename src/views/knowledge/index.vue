@@ -529,6 +529,27 @@ const formatSize = (bytes: number | null) => {
   margin-top: 4px;
 }
 
+@media (max-width: 768px) {
+  .knowledge-container {
+    padding: 14px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  /* 搜索框在窄屏占满整行 */
+  .header-actions :deep(.el-input) {
+    width: 100% !important;
+  }
+  .page-title {
+    font-size: 16px;
+  }
+}
+
 /* Premium Upload Dialog Styles */
 .dialog-header {
   display: flex;

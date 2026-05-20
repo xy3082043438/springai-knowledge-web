@@ -74,3 +74,23 @@ html, body, #app {
 .animate-rise-in {
   animation: rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* ── Responsive global fallbacks (≤768px 手机) ── */
+@media (max-width: 768px) {
+  /* 统一覆盖所有写死宽度的对话框，使其在手机上占满可视宽度 */
+  .el-dialog {
+    width: 92% !important;
+    max-width: 92% !important;
+    --el-dialog-margin-top: 8vh;
+  }
+
+  .el-message-box {
+    width: 90% !important;
+    max-width: 90% !important;
+  }
+
+  /* 表格保留原生横向滚动；避免长内容撑破视口 */
+  .el-table {
+    font-size: 13px;
+  }
+}

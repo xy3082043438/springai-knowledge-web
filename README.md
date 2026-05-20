@@ -1,125 +1,117 @@
-# SpringAI Knowledge Base - Web (前端控制台)
+# SpringAI Knowledge Base · Web 前端控制台
 
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D.svg)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6.svg)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.2-646CFF.svg)](https://vitejs.dev/)
 [![Element Plus](https://img.shields.io/badge/Element%20Plus-2.13-409EFF.svg)](https://element-plus.org/)
 
-本仓库是 **SpringAI Knowledge** 项目的前端 Web 应用，采用 Vue3、TypeScript 与 Vite 构建，包含企业级管理后台与智能对话终端，为知识库使用者与系统管理员提供流畅直观的操作体验。
+**SpringAI Knowledge** 项目的前端 Web 应用，基于 Vue 3 + TypeScript + Vite 构建，集企业级管理后台与智能对话终端于一体，并已适配 **PC 与移动端响应式布局**。
 
-> **💡 完整项目提示**
-> 本项目采用前后端分离架构，当前为**前端 Web 应用**仓库。
-> 配套的**后端核心服务**（Spring Boot + Spring AI）请访问：[springai-knowledge-server](后端仓库链接请替换至此处)
-
-## 🏗️ 系统整体架构图
-
-*(建议将根目录的 `系统功能模块结构图.png` 及 `用户认证与授权完整流程.png` 图传到仓库中，并在此处展示，让用户一目了然看清全局)*
-![系统功能模块结构图](./系统功能模块结构图.png)
+> 本项目为前后端分离架构，此处为**前端仓库**。配套的后端服务（Spring Boot 4 + Spring AI）见 [springai-knowledge-server](https://github.com/xy3082043438/springai-knowledge-server)。
 
 ## ✨ 核心特性
 
-- **💬 沉浸式对话终端**：支持 Server-Sent Events (SSE) 流式输出，提供打字机般丝滑的大模型回答体验，附带知识片段引用追溯功能。
-- **📊 多维数据监控看板**：集成 ECharts 展现服务指标大盘、知识库使用占比及最近问答统计等数据可视化视图。
-- **🔐 高级认证与权限管理**：基于 JWT 与路由拦截的完整 RBAC 系统，支持按钮级别与页面级权限过滤，集成滑块与点选图文验证码。
-- **📁 文档可视化生命周期管理**：提供直观的批量文档上传、向量转换进度查询、预览、修改以及细粒度的可见性授权界面。
-- **⚙️ 全面的系统设置**：友好的后台可视化管理功能，提供用户角色维护、系统参数（如大模型超参调整、检索策略设置）调配及操作日志审计分析。
+- **💬 沉浸式对话终端**：基于 SSE（Server-Sent Events）流式输出，提供打字机般的大模型回答体验，并附带知识片段来源引用追溯。
+- **📱 全端响应式布局**：统一断点体系（手机 ≤768px / 平板 ≤1024px / 桌面），手机端侧边栏折叠为图标条、会话列表改为滑出抽屉，桌面端完整展开。
+- **📊 多维数据看板**：集成 ECharts 与词云，展现服务指标、知识库使用占比、最近问答统计等可视化视图。
+- **🔐 RBAC 权限管理**：基于 JWT 与路由守卫的权限系统，按页面 / 按钮粒度过滤，集成滑块与点选图文验证码。
+- **📁 文档生命周期管理**：批量上传、向量化进度查询、在线预览与编辑，支持细粒度可见性授权。
+- **⚙️ 系统设置**：用户与角色维护、系统参数配置、操作日志与反馈审计。
 
-## 🛠️ 技术栈核心
+## 🛠️ 技术栈
 
-- **核心框架**: Vue 3.5.25 (Composition API, `<script setup>`)
-- **开发语言**: TypeScript 5.7
-- **打包与构建**: Vite 7.2.4
-- **UI 组件库**: Element Plus 2.13
-- **状态管理**: Pinia 3.0
-- **客户端路由**: Vue Router 4.6
-- **网络请求**: Axios (定制封装：Token 无感自动处理, 全局异常捕获)
-- **图表数据化**: ECharts 5.6 & ECharts-Wordcloud
-- **样式处理器**: Sass
+| 分类 | 选型 |
+| --- | --- |
+| 核心框架 | Vue 3.5（Composition API，`<script setup>`） |
+| 开发语言 | TypeScript 5.7 |
+| 构建工具 | Vite 7.2 |
+| UI 组件库 | Element Plus 2.13 |
+| 状态管理 | Pinia 3.0 |
+| 路由 | Vue Router 4.6 |
+| 网络请求 | Axios（封装：Token 自动注入、全局异常拦截） |
+| 数据可视化 | ECharts 5.6 + echarts-wordcloud |
+| 样式 | Sass |
 
-## 📂 项目目录结构
+## 📂 目录结构
 
 ```text
 springai-knowledge-web/
-├── public/                 # 静态无编译资源存放处
+├── public/                     # 不参与编译的静态资源
+├── scripts/
+│   └── gen-vercel-json.mjs     # 构建期生成 vercel.json（注入后端地址）
 ├── src/
-│   ├── api/                # 后端 RESTful 接口封装定义
-│   │   ├── business/       # 业务接口 (知识库文档, 问答对话, 意见反馈)
-│   │   └── system/         # 系统接口 (用户, 角色, 日志, 参数配置)
-│   ├── assets/             # 全局静态资产及公用 SCSS 配置
-│   ├── components/         # 全局复用组件 (如图表, 验证码, 自定义列表槽)
-│   ├── layout/             # 管理系统页面的全套布局外壳 (Layout骨架)
-│   ├── router/             # 路由配置中心及基于权限的动态路由守卫
-│   ├── store/              # Pinia 状态树 (用户鉴权信息缓存, 系统布局状态)
-│   ├── styles/             # 主题样式覆盖及全局通用 CSS
-│   ├── types/              # TypeScript 类型声明 (请求响应模型定义)
-│   ├── utils/              # 工具库 (Axios 拦截器, 权限校验, 日期转换)
-│   └── views/              # 各大业务视图 (登录, 首页仪表盘, 知识总览, 各种系统管理菜单)
-├── .env.development        # 本地开发环境变量配置
-├── index.html              # Vue 的挂载点及主要 HTML 入口
-├── package.json            # NPM 依赖及运行脚本配置
-├── tsconfig.json           # TypeScript 全局配置策略
-└── vite.config.ts          # Vite 构建与代理配置信息
+│   ├── api/                    # 后端接口封装
+│   │   ├── auth.ts             # 登录 / 认证
+│   │   ├── dashboard.ts        # 仪表盘数据
+│   │   ├── business/           # 业务：document · feedback · qa · session
+│   │   └── system/             # 系统：config · log · role · user
+│   ├── assets/                 # 全局静态资产
+│   ├── components/             # 复用组件：Dashboard 图表面板、DocumentPreview、滑块/点选验证码
+│   ├── composables/            # 组合式函数（useBreakpoint：响应式断点）
+│   ├── layout/                 # 布局外壳（侧边栏 / 顶栏 / 主区，含响应式）
+│   ├── router/                 # 路由表与基于权限的路由守卫
+│   ├── store/                  # Pinia 状态（用户鉴权信息等）
+│   ├── styles/                 # 全局样式与断点（_responsive.scss）
+│   ├── types/                  # TypeScript 类型声明（api.ts、router.d.ts）
+│   ├── utils/                  # 工具：request(Axios) · access/rbac(权限) · date
+│   └── views/                  # 页面：登录 / 仪表盘 / 问答 / 知识库 / 系统管理 / 个人信息
+├── index.html                  # HTML 入口
+├── vite.config.ts              # Vite 构建与开发代理配置
+├── vercel.template.json        # Vercel 配置模板（生成 vercel.json 的来源）
+└── tsconfig.json
 ```
 
-## 🚀 快速启动
+## 🚀 快速开始
 
-### 1. 环境依赖准备
+### 1. 环境要求
 
-确保本地已安装 [Node.js](https://nodejs.org/) (推荐 `v20.x` LTS 或 `>= v22.x`)。
+- [Node.js](https://nodejs.org/)：`^20.19.0` 或 `>= 22.12.0`（推荐最新 LTS）
 
-### 2. 安装项目依赖
+### 2. 安装依赖
 
-推荐使用 NPM (或使用 Yarn / PNPM 也可以)：
 ```bash
 npm install
 ```
 
-### 3. 配置开发环境接口转发代理
+### 3. 启动开发服务器
 
-若后端服务地址与默认配置不同，可前往根目录修改 `vite.config.ts` 中的 `proxy` 配置，以解决跨域及路径代理：
-
-```ts
-server: {
-  proxy: {
-    '/api': {
-      target: 'http://localhost:8080', // 你的后端服务基础地址
-      changeOrigin: true
-    }
-  }
-}
-```
-
-### 4. 启动本地开发服务器
-
-运行如下命令，Vue 项目将自动启动 Vite 开发服务器：
 ```bash
 npm run dev
 ```
 
-## 📦 项目编译构建
+开发服务运行在 **`http://localhost:3000`**，并将 `/api` 请求代理到后端。代理目标由 `vite.config.ts` 读取环境变量 `VITE_API_TARGET` 决定，默认 `http://localhost:8080`：
 
-当项目准备部署到生产环境或服务器时，运行如下命令构建产物：
 ```bash
-npm run build
+# 指向非默认后端地址（可选）
+VITE_API_TARGET=http://192.168.1.10:8080 npm run dev
 ```
-编译完成后的前端静态文件将默认输出至 `/dist` 目录中。可直接由 Nginx 或任意 HTTP Server 承载运行。针对构建的快速本地预览，可使用 `npm run preview` 检查。
 
-## 🤝 开发约定
+> 也可直接修改 `vite.config.ts` 中 `server.proxy['/api'].target`。
 
-- 路由遵循后端权限树对应，`src/router/` 中涉及异步路由的部分需与后端约定的角色权限点同步。
-- 业务组件应优先拆解到 `src/components/业务领域/` 下，保持视图层逻辑简洁。
-- Axios 统一拦截报错提醒（通过 Element Plus 取出），针对常规的 401 及权限不足已进行预设捕获，不需在页面端赘述重复逻辑。
+## 📦 构建与预览
 
-## 🚀 部署到 Vercel
+```bash
+npm run build     # 生成 vercel.json → 类型检查(vue-tsc) → vite 打包，产物输出至 dist/
+npm run preview   # 本地预览生产构建产物
+```
 
-本项目通过 Vercel 部署时，由 `vercel.json` 配置 `/api/*` 请求转发到后端服务。为避免后端真实地址被提交到公开仓库，`vercel.json` 不入版本库，而是在构建期由 [scripts/gen-vercel-json.mjs](./scripts/gen-vercel-json.mjs) 基于 [vercel.template.json](./vercel.template.json) 注入环境变量生成。
+> `build` 首步 `gen:vercel` 需要环境变量 `BACKEND_API_URL`（见下文）。产物为纯静态文件，可由 Nginx 等任意 HTTP Server 承载。
 
-部署步骤：
+## ☁️ 部署到 Vercel
 
-1. 在 Vercel 项目的 **Settings → Environment Variables** 中新增（注意勾选 **Production**，需要预览部署再勾 Preview）：
-   - `BACKEND_API_URL` = 后端服务根地址（例如 `http://1.2.3.4` 或 `https://api.example.com`，**不要带末尾斜杠**，不要包含 `/api` 路径）。
-2. **Build Command** 使用默认 `npm run build` 即可，构建脚本会自动调用 `gen:vercel` 生成 `vercel.json`。
-3. 本地若需调试生成结果，可执行：
+为避免后端真实地址进入公开仓库，`vercel.json` **不入版本库**，而是在构建期由 [scripts/gen-vercel-json.mjs](./scripts/gen-vercel-json.mjs) 基于 [vercel.template.json](./vercel.template.json) 注入环境变量生成。
+
+1. 在 Vercel 项目 **Settings → Environment Variables** 中新增（勾选 **Production**，需预览部署再勾 Preview）：
+   - `BACKEND_API_URL` = 后端服务根地址（如 `https://api.example.com`，**不带末尾斜杠**、不含 `/api` 路径）。
+2. **Build Command** 保持默认 `npm run build`，构建时会自动调用 `gen:vercel` 生成 `vercel.json`，将 `/api/*` 转发到后端。
+3. 本地调试生成结果：
    ```bash
    BACKEND_API_URL=http://localhost:8080 npm run gen:vercel
    ```
+
+## 🤝 开发约定
+
+- **权限同步**：`src/router/` 中的路由 `meta.permissions` 需与后端权限点保持一致，权限校验逻辑见 `src/utils/access.ts` 与 `rbac.ts`。
+- **请求与异常**：所有请求经 `src/utils/request.ts` 统一拦截，Token 自动注入、401 与权限不足已全局处理，页面端无需重复编写。
+- **组件拆分**：业务组件优先按领域拆分到 `src/components/` 下，保持视图层简洁。
+- **响应式**：新增样式断点统一引用 `src/styles/_responsive.scss`；需在脚本中感知视口时使用 `src/composables/useBreakpoint.ts`。

@@ -451,13 +451,22 @@ const saveRole = async () => {
   gap: 4px;
 }
 
-@media (max-width: 640px) {
-  .perm-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .role-container {
+    padding: 16px;
   }
-}
-
-@media (max-width: 640px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .page-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    font-size: 17px;
+  }
   .perm-grid {
     grid-template-columns: 1fr;
   }
