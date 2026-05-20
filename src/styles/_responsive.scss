@@ -1,0 +1,20 @@
+// 统一响应式断点体系
+// 用法：在组件 <style scoped> 中 `@use '@/styles/responsive' as *;` 后
+//      `@include mobile { ... }` / `@include tablet { ... }`
+
+$bp-mobile: 768px;
+$bp-tablet: 1024px;
+
+// 手机：≤ 768px
+@mixin mobile {
+  @media (max-width: #{$bp-mobile}) {
+    @content;
+  }
+}
+
+// 平板及以下：≤ 1024px
+@mixin tablet {
+  @media (max-width: #{$bp-tablet}) {
+    @content;
+  }
+}
