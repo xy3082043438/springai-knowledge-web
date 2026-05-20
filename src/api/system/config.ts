@@ -9,10 +9,6 @@ export function listConfigs() {
     return request.get<SystemConfigResponse[]>('/api/config')
 }
 
-export function getConfig(key: string) {
-    return request.get<SystemConfigResponse>(`/api/config/${key}`)
-}
-
 export function upsertConfig(key: string, data: SystemConfigRequest) {
     return request.put<SystemConfigResponse>(`/api/config/${key}`, data)
 }

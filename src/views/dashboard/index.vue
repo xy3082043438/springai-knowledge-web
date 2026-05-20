@@ -53,7 +53,6 @@ import { useUserStore } from '@/store/user'
 import { isAdminRole } from '@/utils/access'
 import type { DocumentSummaryResponse, QaLogResponse, UserResponse, DashboardResponse } from '@/types/api'
 import type { MetricCard } from '@/components/Dashboard/MetricCards.vue'
-import type { TrendItem } from '@/components/Dashboard/TrendPanel.vue'
 import type { DistributionItem } from '@/components/Dashboard/DistributionPanel.vue'
 import type { StatusItem } from '@/components/Dashboard/StatusPanel.vue'
 import { formatDateTime } from '@/utils/date'
@@ -72,6 +71,13 @@ const metricIconMap = {
   qa: markRaw(ChatDotRound),
   users: markRaw(User),
   system: markRaw(Monitor),
+}
+
+interface TrendItem {
+  key: string
+  label: string
+  value: number
+  height: number
 }
 
 /* ── State ── */

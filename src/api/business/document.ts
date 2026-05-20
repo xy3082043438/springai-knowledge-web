@@ -51,30 +51,6 @@ export function uploadDocument(
     })
 }
 
-export function replaceFile(
-    id: number,
-    file: File,
-    allowedRoles?: string[],
-    title?: string,
-    onProgress?: (percent: number) => void,
-) {
-    assertSize(file)
-    const formData = new FormData()
-    formData.append('file', file)
-    const params: Record<string, any> = {}
-    if (allowedRoles) params.allowedRoles = allowedRoles
-    if (title) params.title = title
-    return request.post<DocumentSummaryResponse>(`/api/documents/${id}/file`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        params,
-        onUploadProgress: (e) => {
-            if (onProgress && e.total) {
-                onProgress(Math.round((e.loaded / e.total) * 100))
-            }
-        },
-    })
-}
-
 export function updateDocument(id: number, data: DocumentUpdateRequest) {
     return request.patch<DocumentResponse>(`/api/documents/${id}`, data)
 }

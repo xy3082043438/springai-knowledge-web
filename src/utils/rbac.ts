@@ -79,31 +79,3 @@ export const permissionGroups: PermissionGroup[] = [
     ],
   },
 ];
-
-export const allPermissions = permissionGroups.flatMap((group) => group.permissions.map((permission) => permission.code))
-
-const permissionMeta = permissionGroups.reduce<Record<Permission, PermissionOption>>((accumulator, group) => {
-  group.permissions.forEach((permission) => {
-    accumulator[permission.code] = permission
-  })
-  return accumulator
-}, {} as Record<Permission, PermissionOption>)
-
-export function getPermissionLabel(permission?: Permission | null) {
-  if (!permission) return ''
-  return permissionMeta[permission]?.label || permission
-}
-
-export function getPermissionDescription(permission?: Permission | null) {
-  if (!permission) return ''
-  return permissionMeta[permission]?.description || ''
-}
-
-export function normalizePermissionList(permissions?: Permission[] | null) {
-  if (!permissions?.length) {
-    return [] as Permission[]
-  }
-
-  const permissionSet = new Set(permissions)
-  return allPermissions.filter((permission) => permissionSet.has(permission))
-}

@@ -1,10 +1,6 @@
 import request from '@/utils/request'
 import type { QaRequest, QaResponse } from '@/types/api'
 
-export function ask(data: QaRequest) {
-    return request.post<QaResponse>('/api/qa', data)
-}
-
 export function getSuggestions() {
     return request.get<string[]>('/api/qa/suggestions')
 }

@@ -78,14 +78,6 @@ export interface RoleUpdateRequest {
     permissions?: Permission[]
 }
 
-export interface PermissionOptionResponse {
-    code: string
-    category: string
-    categoryLabel: string
-    label: string
-    description: string
-}
-
 /* ============  Document  ============ */
 export type DocumentStatus = 'UPLOADED' | 'PARSING' | 'READY' | 'FAILED'
 
