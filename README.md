@@ -43,7 +43,6 @@ springai-knowledge-web/
 │   │   ├── dashboard.ts        # 仪表盘数据
 │   │   ├── business/           # 业务：document · feedback · qa · session
 │   │   └── system/             # 系统：config · log · role · user
-│   ├── assets/                 # 全局静态资产
 │   ├── components/             # 复用组件：Dashboard 图表面板、DocumentPreview 文档预览
 │   ├── composables/            # 组合式函数（useBreakpoint：响应式断点）
 │   ├── layout/                 # 布局外壳（侧边栏 / 顶栏 / 主区，含响应式）
