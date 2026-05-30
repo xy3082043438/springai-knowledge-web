@@ -25,6 +25,17 @@
     </div>
 
     <el-table :data="documents" v-loading="loading" style="width: 100%;" stripe border>
+      <el-table-column type="expand">
+        <template #default="{ row }">
+          <div class="doc-summary">
+            <span class="doc-summary-label">AI 摘要</span>
+            <p v-if="row.summary" class="doc-summary-text">{{ row.summary }}</p>
+            <p v-else class="doc-summary-empty">
+              {{ row.status === 'READY' ? '该文档暂无摘要（可重索引重新生成）' : '文档解析完成后将自动生成摘要' }}
+            </p>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="title" label="文档标题" min-width="200" show-overflow-tooltip />
       <el-table-column label="文件名" width="200" show-overflow-tooltip>
         <template #default="{ row }">
@@ -521,6 +532,34 @@ const formatSize = (bytes: number | null) => {
 .page-title {
   font-size: 18px;
   font-weight: 700;
+}
+
+.doc-summary {
+  padding: 8px 24px 12px;
+}
+
+.doc-summary-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: #eff6ff;
+  padding: 2px 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.doc-summary-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.doc-summary-empty {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
 }
 
 .page-subtitle {

@@ -85,6 +85,7 @@ export interface DocumentResponse {
     id: number
     title: string
     content: string
+    summary?: string
     fileName: string
     contentType?: string
     fileSize: number
@@ -98,6 +99,7 @@ export interface DocumentResponse {
 export interface DocumentSummaryResponse {
     id: number
     title: string
+    summary?: string
     fileName: string
     contentType?: string
     fileSize: number
